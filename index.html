@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIBE Gallery - Immersive Image Experience</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff4d89;
+            --secondary: #6e45e2;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --accent: #ff8e53;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark), #16213e);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 2rem;
+            text-align: center;
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        .tagline {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            aspect-ratio: 4/3;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .image-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover .image-info {
+            transform: translateY(0);
+        }
+
+        .image-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .image-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Lightbox Styles */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .lightbox.active .lightbox-img {
+            transform: scale(1);
+        }
+
+        .lightbox-info {
+            margin-top: 1.5rem;
+            text-align: center;
+            max-width: 800px;
+        }
+
+        .lightbox-title {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .lightbox-desc {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            font-size: 2rem;
+            color: white;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .lightbox-close:hover {
+            color: var(--primary);
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 2rem;
+            transform: translateY(-50%);
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .image-tools {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+
+        .tool-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tool-btn:hover {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .zoom-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .zoom-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .zoom-btn:hover {
+            background: var(--primary);
+        }
+
+        .download-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 77, 137, 0.3);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 77, 137, 0.5);
+        }
+
+        /* Loading animation */
+        .loader {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loader.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .gallery-container {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .lightbox-title {
+                font-size: 1.4rem;
+            }
+
+            .lightbox-desc {
+                font-size: 0.9rem;
+            }
+
+            .nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Animation classes */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Like button animation */
+        .like-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            z-index: 10;
+        }
+
+        .like-btn.liked {
+            color: var(--primary);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .like-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Share modal */
+        .share-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(26, 26, 46, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 90%;
+            width: 400px;
+        }
+
+        .share-modal.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .share-modal h3 {
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .share-options {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .share-option {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .share-option:hover {
+            transform: scale(1.1);
+            background: var(--primary);
+        }
+
+        .share-link {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+
+        .share-link input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 0.8rem 1rem;
+            color: white;
+            outline: none;
+        }
+
+        .share-link button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 1.2rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .share-link button:hover {
+            background: #ff3d7d;
+        }
+
+        .close-share {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-share:hover {
+            color: var(--primary);
+        }
+
+        /* Filter controls */
+        .filter-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
+            flex-wrap: wrap;
+            background: rgba(26, 26, 46, 0.5);
+            margin: 0 2rem;
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Comments section */
+        .comments-section {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            display: none;
+        }
+
+        .comments-section.active {
+            display: block;
+        }
+
+        .comments-section h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .comment-form {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .comment-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 0.8rem 1rem;
+            border-radius: 50px;
+            color: white;
+            outline: none;
+        }
+
+        .comment-submit {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .comment-submit:hover {
+            background: #ff3d7d;
+        }
+
+        .comment-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .comment {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .comment-text {
+            line-height: 1.5;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff3d7d;
+        }
+    </style>
+</head>
+<body>
+    <header>
+       
+    </header>
+
+    <div class="gallery-container">
+        <!-- Sample gallery items - in a real app these would be dynamically loaded -->
+        <div class="gallery-item" data-category="nature">
+            <img src="1.png" alt="Nature" loading="lazy">
+            <div class="image-info">
+                <div class="image-title">Mountain Lake</div>
+                <div class="image-desc">Serene waters reflecting the majestic peaks</div>
+            </div>
+            <button class="like-btn"><i class="far fa-heart"></i></button>
+        </div>
+
+        <div class="gallery-item" data-category="urban">
+            <img src="2.png" alt="City" loading="lazy">
+            <div class="image-info">
+                <div class="image-title">Neon Streets</div>
+                <div class="image-desc">The vibrant nightlife of the city</div>
+            </div>
+            <button class="like-btn"><i class="far fa-heart"></i></button>
+        </div>
+
+        <div class="gallery-item" data-category="abstract">
+            <img src="3.png" alt="Abstract" loading="lazy">
+            <div class="image-info">
+                <div class="image-title">Color Explosion</div>
+                <div class="image-desc">A burst of creativity and color</div>
+            </div>
+            <button class="like-btn"><i class="far fa-heart"></i></button>
+        </div>
+
+        <div class="gallery-item" data-category="people">
+            <img src="4.jpeg" alt="Portrait" loading="lazy">
+            <div class="image-info">
+                <div class="image-title">Human Emotion</div>
+                <div class="image-desc">Capturing the essence of humanity</div>
+            </div>
+            <button class="like-btn"><i class="far fa-heart"></i></button>
+        </div>
+
+        <div class="gallery-item" data-category="nature">
+            <img src="https://source.unsplash.com/random/800x600/?forest" alt="Forest" loading="lazy">
+            <div class="image-info">
+                <div class="image-title">Ancient Woods</div>
+                <div class="image-desc">Where sunlight dances through the leaves</div>
+            </div>
+            <button class="like-btn"><i class="far fa-heart"></i></button>
+        </div>
+
+        <div class="gallery-item" data-category="urban">
+            <img src="https://source.unsplash.com/random/800x600/?architecture" alt="Architecture" loading="lazy">
+            <div class="image-info">
+                <div class="image-title">Modern Design</div>
+                <div class="image-desc">The intersection of form and function</div>
+            </div>
+            <button class="like-btn"><i class="far fa-heart"></i></button>
+        </div>
+
+        <div class="gallery-item" data-category="abstract">
+            <img src="https://source.unsplash.com/random/800x600/?pattern" alt="Pattern" loading="lazy">
+            <div class="image-info">
+                <div class="image-title">Geometric Harmony</div>
+                <div class="image-desc">Where shapes tell a story</div>
+            </div>
+            <button class="like-btn"><i class="far fa-heart"></i></button>
+        </div>
+
+        <div class="gallery-item" data-category="people">
+            <img src="https://source.unsplash.com/random/800x600/?couple" alt="Couple" loading="lazy">
+            <div class="image-info">
+                <div class="image-title">Togetherness</div>
+                <div class="image-desc">Moments that define relationships</div>
+            </div>
+            <button class="like-btn"><i class="far fa-heart"></i></button>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox">
+        <button class="lightbox-close"><i class="fas fa-times"></i></button>
+        <div class="lightbox-content">
+            <img class="lightbox-img" src="" alt="Full size image">
+            <div class="lightbox-info">
+                <h2 class="lightbox-title">Image Title</h2>
+                <p class="lightbox-desc">Image description goes here with more details about what's shown in the picture.</p>
+                <div class="image-tools">
+                    <button class="tool-btn" id="like-btn"><i class="far fa-heart"></i></button>
+                    <button class="tool-btn" id="share-btn"><i class="fas fa-share-alt"></i></button>
+                    <button class="tool-btn" id="comment-btn"><i class="far fa-comment"></i></button>
+                    <button class="tool-btn" id="info-btn"><i class="far fa-info-circle"></i></button>
+                </div>
+            </div>
+            <div class="zoom-container">
+                <button class="zoom-btn" id="zoom-out"><i class="fas fa-search-minus"></i></button>
+                <span id="zoom-level">100%</span>
+                <button class="zoom-btn" id="zoom-in"><i class="fas fa-search-plus"></i></button>
+            </div>
+            <button class="download-btn"><i class="fas fa-download"></i> Download</button>
+            <div class="lightbox-nav">
+                <button class="nav-btn" id="prev-btn"><i class="fas fa-chevron-left"></i></button>
+                <button class="nav-btn" id="next-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+        <div class="comments-section">
+            <h3>Comments</h3>
+            <form class="comment-form">
+                <input type="text" class="comment-input" placeholder="Add a comment...">
+                <button type="submit" class="comment-submit">Post</button>
+            </form>
+            <div class="comment-list">
+                <div class="comment">
+                    <div class="comment-header">
+                        <span class="comment-author">Jane Doe</span>
+                        <span class="comment-date">2 days ago</span>
+                    </div>
+                    <div class="comment-text">This image is absolutely stunning! The colors are so vibrant.</div>
+                </div>
+                <div class="comment">
+                    <div class="comment-header">
+                        <span class="comment-author">John Smith</span>
+                        <span class="comment-date">1 week ago</span>
+                    </div>
+                    <div class="comment-text">Reminds me of my trip last summer. Beautiful composition!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="share-modal">
+        <button class="close-share"><i class="fas fa-times"></i></button>
+        <h3>Share This Image</h3>
+        <div class="share-options">
+            <button class="share-option"><i class="fab fa-facebook-f"></i></button>
+            <button class="share-option"><i class="fab fa-twitter"></i></button>
+            <button class="share-option"><i class="fab fa-instagram"></i></button>
+            <button class="share-option"><i class="fab fa-pinterest-p"></i></button>
+        </div>
+        <div class="share-link">
+            <input type="text" value="https://example.com/image1" readonly>
+            <button id="copy-link">Copy</button>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loader">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lightbox functionality
+            const lightbox = document.querySelector('.lightbox');
+            const lightboxImg = document.querySelector('.lightbox-img');
+            const lightboxTitle = document.querySelector('.lightbox-title');
+            const lightboxDesc = document.querySelector('.lightbox-desc');
+            const closeBtn = document.querySelector('.lightbox-close');
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            const downloadBtn = document.querySelector('.download-btn');
+            const loader = document.querySelector('.loader');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const shareModal = document.querySelector('.share-modal');
+            const closeShare = document.querySelector('.close-share');
+            const copyLink = document.getElementById('copy-link');
+            const commentsSection = document.querySelector('.comments-section');
+            const commentBtn = document.getElementById('comment-btn');
+            const shareBtn = document.getElementById('share-btn');
+            const likeBtn = document.getElementById('like-btn');
+            const zoomIn = document.getElementById('zoom-in');
+            const zoomOut = document.getElementById('zoom-out');
+            const zoomLevel = document.getElementById('zoom-level');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const commentForm = document.querySelector('.comment-form');
+            const commentInput = document.querySelector('.comment-input');
+            const commentList = document.querySelector('.comment-list');
+
+            let currentImageIndex = 0;
+            let currentZoom = 100;
+            let images = [];
+
+            // Initialize gallery
+            function initGallery() {
+                images = Array.from(galleryItems).map(item => ({
+                    src: item.querySelector('img').src,
+                    title: item.querySelector('.image-title').textContent,
+                    desc: item.querySelector('.image-desc').textContent,
+                    element: item
+                }));
+
+                galleryItems.forEach((item, index) => {
+                    item.addEventListener('click', () => openLightbox(index));
+                    
+                    // Like button functionality for thumbnails
+                    const likeBtn = item.querySelector('.like-btn');
+                    likeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        likeBtn.classList.toggle('liked');
+                        likeBtn.innerHTML = likeBtn.classList.contains('liked') ? 
+                            '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
+                    });
+                });
+            }
+
+            // Open lightbox
+            function openLightbox(index) {
+                loader.classList.add('active');
+                
+                setTimeout(() => {
+                    currentImageIndex = index;
+                    const image = images[index];
+                    lightboxImg.src = image.src;
+                    lightboxTitle.textContent = image.title;
+                    lightboxDesc.textContent = image.desc;
+                    downloadBtn.setAttribute('data-src', image.src);
+                    downloadBtn.setAttribute('download', image.title.replace(/\s+/g, '_') + '.jpg');
+                    
+                    // Reset zoom and comments
+                    currentZoom = 100;
+                    lightboxImg.style.transform = 'scale(1)';
+                    zoomLevel.textContent = '100%';
+                    commentsSection.classList.remove('active');
+                    
+                    lightbox.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    loader.classList.remove('active');
+                }, 500);
+            }
+
+            // Close lightbox
+            function closeLightbox() {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+
+            // Navigation functions
+            function showPrevImage() {
+                currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+                openLightbox(currentImageIndex);
+            }
+
+            function showNextImage() {
+                currentImageIndex = (currentImageIndex + 1) % images.length;
+                openLightbox(currentImageIndex);
+            }
+
+            // Zoom functions
+            function zoomInImage() {
+                if (currentZoom < 200) {
+                    currentZoom += 10;
+                    lightboxImg.style.transform = `scale(${currentZoom / 100})`;
+                    zoomLevel.textContent = `${currentZoom}%`;
+                }
+            }
+
+            function zoomOutImage() {
+                if (currentZoom > 50) {
+                    currentZoom -= 10;
+                    lightboxImg.style.transform = `scale(${currentZoom / 100})`;
+                    zoomLevel.textContent = `${currentZoom}%`;
+                }
+            }
+
+            // Filter functionality
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    const filter = btn.dataset.filter;
+                    galleryItems.forEach(item => {
+                        if (filter === 'all' || item.dataset.category === filter) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // Event listeners
+            closeBtn.addEventListener('click', closeLightbox);
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) closeLightbox();
+            });
+            prevBtn.addEventListener('click', showPrevImage);
+            nextBtn.addEventListener('click', showNextImage);
+            zoomIn.addEventListener('click', zoomInImage);
+            zoomOut.addEventListener('click', zoomOutImage);
+            shareBtn.addEventListener('click', () => shareModal.classList.add('active'));
+            closeShare.addEventListener('click', () => shareModal.classList.remove('active'));
+            commentBtn.addEventListener('click', () => commentsSection.classList.toggle('active'));
+            likeBtn.addEventListener('click', () => {
+                likeBtn.classList.toggle('liked');
+                likeBtn.innerHTML = likeBtn.classList.contains('liked') ? 
+                    '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
+                
+                // Also update the thumbnail like button
+                images[currentImageIndex].element.querySelector('.like-btn').classList.toggle('liked');
+                images[currentImageIndex].element.querySelector('.like-btn').innerHTML = 
+                    likeBtn.classList.contains('liked') ? 
+                    '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
+            });
+
+            // Copy link functionality
+            copyLink.addEventListener('click', () => {
+                const linkInput = document.querySelector('.share-link input');
+                linkInput.select();
+                document.execCommand('copy');
+                copyLink.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyLink.textContent = 'Copy';
+                }, 2000);
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (!lightbox.classList.contains('active')) return;
+                
+                switch(e.key) {
+                    case 'Escape':
+                        closeLightbox();
+                        break;
+                    case 'ArrowLeft':
+                        showPrevImage();
+                        break;
+                    case 'ArrowRight':
+                        showNextImage();
+                        break;
+                    case '+':
+                    case '=':
+                        zoomInImage();
+                        break;
+                    case '-':
+                        zoomOutImage();
+                        break;
+                }
+            });
+
+            // Comment functionality
+            commentForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const commentText = commentInput.value.trim();
+                if (commentText) {
+                    const now = new Date();
+                    const commentDate = now.toLocaleDateString() + ' at ' + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    const commentDiv = document.createElement('div');
+                    commentDiv.className = 'comment';
+                    commentDiv.innerHTML = `
+                        <div class="comment-header">
+                            <span class="comment-author">You</span>
+                            <span class="comment-date">Just now</span>
+                        </div>
+                        <div class="comment-text">${commentText}</div>
+                    `;
+                    
+                    commentList.prepend(commentDiv);
+                    commentInput.value = '';
+                    
+                    // Scroll to the new comment
+                    commentDiv.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+
+            // Initialize the gallery
+            initGallery();
+        });
+    </script>
+</body>
+</html>
