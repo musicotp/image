@@ -3,9 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIBE Gallery - Immersive Image Experience</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Secure Image Gallery</title>
     <style>
+        /* Password Screen Styles */
+        .password-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+        }
+        
+        .password-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .password-container h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #ff4d89;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            outline: none;
+        }
+        
+        .password-submit {
+            width: 100%;
+            padding: 0.8rem;
+            background: #ff4d89;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        .password-submit:hover {
+            background: #ff3d7d;
+        }
+        
+        .error-message {
+            color: #ff6b6b;
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        /* Hide the main content initially */
+        #main-content {
+            display: none;
+        }
+
+        /* Rest of your existing styles... */
         :root {
             --primary: #ff4d89;
             --secondary: #6e45e2;
@@ -618,194 +690,410 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #ff3d7d;
         }
+        /* Video Section Styles */
+.video-section {
+    padding: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    background: linear-gradient(to right, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.video-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.video-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.video-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.video-wrapper {
+    position: relative;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    overflow: hidden;
+}
+
+.video-wrapper video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: none;
+}
+
+.video-info {
+    padding: 1.5rem;
+}
+
+.video-title {
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.video-desc {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .video-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+}
     </style>
 </head>
 <body>
-    <header>
-       
-    </header>
-
-    <div class="gallery-container">
-        <!-- Sample gallery items - in a real app these would be dynamically loaded -->
-        <div class="gallery-item" data-category="nature">
-            <img src="1.png" alt="Nature" loading="lazy">
-            <div class="image-info">
-                <div class="image-title">Mountain Lake</div>
-                <div class="image-desc">Serene waters reflecting the majestic peaks</div>
-            </div>
-            <button class="like-btn"><i class="far fa-heart"></i></button>
-        </div>
-
-        <div class="gallery-item" data-category="urban">
-            <img src="2.png" alt="City" loading="lazy">
-            <div class="image-info">
-                <div class="image-title">Neon Streets</div>
-                <div class="image-desc">The vibrant nightlife of the city</div>
-            </div>
-            <button class="like-btn"><i class="far fa-heart"></i></button>
-        </div>
-
-        <div class="gallery-item" data-category="abstract">
-            <img src="3.png" alt="Abstract" loading="lazy">
-            <div class="image-info">
-                <div class="image-title">Color Explosion</div>
-                <div class="image-desc">A burst of creativity and color</div>
-            </div>
-            <button class="like-btn"><i class="far fa-heart"></i></button>
-        </div>
-
-        <div class="gallery-item" data-category="people">
-            <img src="4.jpeg" alt="Portrait" loading="lazy">
-            <div class="image-info">
-                <div class="image-title">Human Emotion</div>
-                <div class="image-desc">Capturing the essence of humanity</div>
-            </div>
-            <button class="like-btn"><i class="far fa-heart"></i></button>
-        </div>
-
-        <div class="gallery-item" data-category="nature">
-            <img src="6.png" alt="Forest" loading="lazy">
-            <div class="image-info">
-                <div class="image-title">Ancient Woods</div>
-                <div class="image-desc">Where sunlight dances through the leaves</div>
-            </div>
-            <button class="like-btn"><i class="far fa-heart"></i></button>
-        </div>
-
-        <div class="gallery-item" data-category="urban">
-            <img src="7.png" alt="Architecture" loading="lazy">
-            <div class="image-info">
-                <div class="image-title">Modern Design</div>
-                <div class="image-desc">The intersection of form and function</div>
-            </div>
-            <button class="like-btn"><i class="far fa-heart"></i></button>
-        </div>
-
-        <div class="gallery-item" data-category="abstract">
-            <img src="wef.png" alt="Pattern" loading="lazy">
-            <div class="image-info">
-                <div class="image-title">Geometric Harmony</div>
-                <div class="image-desc">Where shapes tell a story</div>
-            </div>
-            <button class="like-btn"><i class="far fa-heart"></i></button>
-        </div>
-
-        <div class="gallery-item" data-category="people">
-            <img src="https://source.unsplash.com/random/800x600/?couple" alt="Couple" loading="lazy">
-            <div class="image-info">
-                <div class="image-title">Togetherness</div>
-                <div class="image-desc">Moments that define relationships</div>
-            </div>
-            <button class="like-btn"><i class="far fa-heart"></i></button>
+    <!-- Password Screen -->
+    <div class="password-screen" id="password-screen">
+        <div class="password-container">
+            <h2>Secure Image Gallery</h2>
+            <p style="text-align: center; margin-bottom: 1.5rem;">Please enter both passwords to access the gallery</p>
+            
+            <input type="password" id="first-password" class="password-input" placeholder="First Password" required>
+            <input type="password" id="second-password" class="password-input" placeholder="Second Password" required>
+            <button class="password-submit" id="password-submit">Access Gallery</button>
+            
+            <div class="error-message" id="error-message">Incorrect passwords. Please try again.</div>
         </div>
     </div>
 
-    <!-- Lightbox -->
-    <div class="lightbox">
-        <button class="lightbox-close"><i class="fas fa-times"></i></button>
-        <div class="lightbox-content">
-            <img class="lightbox-img" src="" alt="Full size image">
-            <div class="lightbox-info">
-                <h2 class="lightbox-title">Image Title</h2>
-                <p class="lightbox-desc">Image description goes here with more details about what's shown in the picture.</p>
-                <div class="image-tools">
-                    <button class="tool-btn" id="like-btn"><i class="far fa-heart"></i></button>
-                    <button class="tool-btn" id="share-btn"><i class="fas fa-share-alt"></i></button>
-                    <button class="tool-btn" id="comment-btn"><i class="far fa-comment"></i></button>
-                    <button class="tool-btn" id="info-btn"><i class="far fa-info-circle"></i></button>
+    <!-- Main Content (hidden until passwords are entered) -->
+    <div id="main-content">
+      
+
+        <div class="gallery-container">
+            <!-- Sample gallery items - in a real app these would be dynamically loaded -->
+            <div class="gallery-item" data-category="nature">
+                <img src="1.png" alt="Nature" loading="lazy">
+                <div class="image-info">
+                    <div class="image-title">Mountain Lake</div>
+                    <div class="image-desc">Serene waters reflecting the majestic peaks</div>
                 </div>
+                <button class="like-btn"><i class="far fa-heart"></i></button>
             </div>
-            <div class="zoom-container">
-                <button class="zoom-btn" id="zoom-out"><i class="fas fa-search-minus"></i></button>
-                <span id="zoom-level">100%</span>
-                <button class="zoom-btn" id="zoom-in"><i class="fas fa-search-plus"></i></button>
+
+            <div class="gallery-item" data-category="urban">
+                <img src="2.png" alt="City" loading="lazy">
+                <div class="image-info">
+                    <div class="image-title">Neon Streets</div>
+                    <div class="image-desc">The vibrant nightlife of the city</div>
+                </div>
+                <button class="like-btn"><i class="far fa-heart"></i></button>
             </div>
-            <button class="download-btn"><i class="fas fa-download"></i> Download</button>
-            <div class="lightbox-nav">
-                <button class="nav-btn" id="prev-btn"><i class="fas fa-chevron-left"></i></button>
-                <button class="nav-btn" id="next-btn"><i class="fas fa-chevron-right"></i></button>
+
+            <div class="gallery-item" data-category="abstract">
+                <img src="3.png" alt="Abstract" loading="lazy">
+                <div class="image-info">
+                    <div class="image-title">Color Explosion</div>
+                    <div class="image-desc">A burst of creativity and color</div>
+                </div>
+                <button class="like-btn"><i class="far fa-heart"></i></button>
+            </div>
+
+            <div class="gallery-item" data-category="people">
+                <img src="4.jpeg" alt="Portrait" loading="lazy">
+                <div class="image-info">
+                    <div class="image-title">Human Emotion</div>
+                    <div class="image-desc">Capturing the essence of humanity</div>
+                </div>
+                <button class="like-btn"><i class="far fa-heart"></i></button>
+            </div>
+
+            <div class="gallery-item" data-category="nature">
+                <img src="6.png" alt="Forest" loading="lazy">
+                <div class="image-info">
+                    <div class="image-title">Ancient Woods</div>
+                    <div class="image-desc">Where sunlight dances through the leaves</div>
+                </div>
+                <button class="like-btn"><i class="far fa-heart"></i></button>
+            </div>
+
+            <div class="gallery-item" data-category="urban">
+                <img src="7.png" alt="Architecture" loading="lazy">
+                <div class="image-info">
+                    <div class="image-title">Modern Design</div>
+                    <div class="image-desc">The intersection of form and function</div>
+                </div>
+                <button class="like-btn"><i class="far fa-heart"></i></button>
+            </div>
+
+            <div class="gallery-item" data-category="abstract">
+                <img src="wef.png" alt="Pattern" loading="lazy">
+                <div class="image-info">
+                    <div class="image-title">Geometric Harmony</div>
+                    <div class="image-desc">Where shapes tell a story</div>
+                </div>
+                <button class="like-btn"><i class="far fa-heart"></i></button>
+            </div>
+
+            <div class="gallery-item" data-category="people">
+                <img src="https://source.unsplash.com/random/800x600/?couple" alt="Couple" loading="lazy">
+                <div class="image-info">
+                    <div class="image-title">Togetherness</div>
+                    <div class="image-desc">Moments that define relationships</div>
+                </div>
+                <button class="like-btn"><i class="far fa-heart"></i></button>
             </div>
         </div>
-        <div class="comments-section">
-            <h3>Comments</h3>
-            <form class="comment-form">
-                <input type="text" class="comment-input" placeholder="Add a comment...">
-                <button type="submit" class="comment-submit">Post</button>
-            </form>
-            <div class="comment-list">
-                <div class="comment">
-                    <div class="comment-header">
-                        <span class="comment-author">Jane Doe</span>
-                        <span class="comment-date">2 days ago</span>
+<!-- Video Section -->
+<section class="video-section">
+    <h2 class="section-title">Video Gallery</h2>
+    <div class="video-container">
+        <!-- Video 1 -->
+        <div class="video-item">
+            <div class="video-wrapper">
+                <video controls poster="https://source.unsplash.com/random/800x450/?video,preview">
+                    <source src="your-video-url-1.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="video-info">
+                <h3 class="video-title">Beautiful Sunset</h3>
+                <p class="video-desc">Watch this amazing sunset over the mountains</p>
+            </div>
+        </div>
+
+        <!-- Video 2 -->
+        <div class="video-item">
+            <div class="video-wrapper">
+                <video controls poster="https://source.unsplash.com/random/800x450/?ocean,wave">
+                    <source src="your-video-url-2.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="video-info">
+                <h3 class="video-title">Ocean Waves</h3>
+                <p class="video-desc">Relaxing ocean waves for meditation</p>
+            </div>
+        </div>
+
+        <!-- Video 3 -->
+        <div class="video-item">
+            <div class="video-wrapper">
+                <video controls poster="https://source.unsplash.com/random/800x450/?city,night">
+                    <source src="your-video-url-3.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="video-info">
+                <h3 class="video-title">City Lights</h3>
+                <p class="video-desc">Night time in the busy city</p>
+            </div>
+        </div>
+    </div>
+</section>
+        <!-- Lightbox -->
+        <div class="lightbox">
+            <button class="lightbox-close"><i class="fas fa-times"></i></button>
+            <div class="lightbox-content">
+                <img class="lightbox-img" src="" alt="Full size image">
+                <div class="lightbox-info">
+                    <h2 class="lightbox-title">Image Title</h2>
+                    <p class="lightbox-desc">Image description goes here with more details about what's shown in the picture.</p>
+                    <div class="image-tools">
+                        <button class="tool-btn" id="like-btn"><i class="far fa-heart"></i></button>
+                        <button class="tool-btn" id="share-btn"><i class="fas fa-share-alt"></i></button>
+                        <button class="tool-btn" id="comment-btn"><i class="far fa-comment"></i></button>
+                        <button class="tool-btn" id="info-btn"><i class="far fa-info-circle"></i></button>
                     </div>
-                    <div class="comment-text">This image is absolutely stunning! The colors are so vibrant.</div>
                 </div>
-                <div class="comment">
-                    <div class="comment-header">
-                        <span class="comment-author">John Smith</span>
-                        <span class="comment-date">1 week ago</span>
+                <div class="zoom-container">
+                    <button class="zoom-btn" id="zoom-out"><i class="fas fa-search-minus"></i></button>
+                    <span id="zoom-level">100%</span>
+                    <button class="zoom-btn" id="zoom-in"><i class="fas fa-search-plus"></i></button>
+                </div>
+                <button class="download-btn"><i class="fas fa-download"></i> Download</button>
+                <div class="lightbox-nav">
+                    <button class="nav-btn" id="prev-btn"><i class="fas fa-chevron-left"></i></button>
+                    <button class="nav-btn" id="next-btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            <div class="comments-section">
+                <h3>Comments</h3>
+                <form class="comment-form">
+                    <input type="text" class="comment-input" placeholder="Add a comment...">
+                    <button type="submit" class="comment-submit">Post</button>
+                </form>
+                <div class="comment-list">
+                    <div class="comment">
+                        <div class="comment-header">
+                            <span class="comment-author">Jane Doe</span>
+                            <span class="comment-date">2 days ago</span>
+                        </div>
+                        <div class="comment-text">This image is absolutely stunning! The colors are so vibrant.</div>
                     </div>
-                    <div class="comment-text">Reminds me of my trip last summer. Beautiful composition!</div>
+                    <div class="comment">
+                        <div class="comment-header">
+                            <span class="comment-author">John Smith</span>
+                            <span class="comment-date">1 week ago</span>
+                        </div>
+                        <div class="comment-text">Reminds me of my trip last summer. Beautiful composition!</div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Share Modal -->
+        <div class="share-modal">
+            <button class="close-share"><i class="fas fa-times"></i></button>
+            <h3>Share This Image</h3>
+            <div class="share-options">
+                <button class="share-option"><i class="fab fa-facebook-f"></i></button>
+                <button class="share-option"><i class="fab fa-twitter"></i></button>
+                <button class="share-option"><i class="fab fa-instagram"></i></button>
+                <button class="share-option"><i class="fab fa-pinterest-p"></i></button>
+            </div>
+            <div class="share-link">
+                <input type="text" value="https://example.com/image1" readonly>
+                <button id="copy-link">Copy</button>
+            </div>
+        </div>
+
+        <!-- Loading overlay -->
+        <div class="loader">
+            <div class="spinner"></div>
+        </div>
     </div>
 
-    <!-- Share Modal -->
-    <div class="share-modal">
-        <button class="close-share"><i class="fas fa-times"></i></button>
-        <h3>Share This Image</h3>
-        <div class="share-options">
-            <button class="share-option"><i class="fab fa-facebook-f"></i></button>
-            <button class="share-option"><i class="fab fa-twitter"></i></button>
-            <button class="share-option"><i class="fab fa-instagram"></i></button>
-            <button class="share-option"><i class="fab fa-pinterest-p"></i></button>
-        </div>
-        <div class="share-link">
-            <input type="text" value="https://example.com/image1" readonly>
-            <button id="copy-link">Copy</button>
-        </div>
-    </div>
-
-    <!-- Loading overlay -->
-    <div class="loader">
-        <div class="spinner"></div>
-    </div>
+    <!-- Font Awesome for icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
     <script>
+        // Password Protection System
         document.addEventListener('DOMContentLoaded', function() {
-            // Lightbox functionality
-            const lightbox = document.querySelector('.lightbox');
-            const lightboxImg = document.querySelector('.lightbox-img');
-            const lightboxTitle = document.querySelector('.lightbox-title');
-            const lightboxDesc = document.querySelector('.lightbox-desc');
-            const closeBtn = document.querySelector('.lightbox-close');
-            const galleryItems = document.querySelectorAll('.gallery-item');
-            const downloadBtn = document.querySelector('.download-btn');
-            const loader = document.querySelector('.loader');
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            const shareModal = document.querySelector('.share-modal');
-            const closeShare = document.querySelector('.close-share');
-            const copyLink = document.getElementById('copy-link');
-            const commentsSection = document.querySelector('.comments-section');
-            const commentBtn = document.getElementById('comment-btn');
-            const shareBtn = document.getElementById('share-btn');
-            const likeBtn = document.getElementById('like-btn');
-            const zoomIn = document.getElementById('zoom-in');
-            const zoomOut = document.getElementById('zoom-out');
-            const zoomLevel = document.getElementById('zoom-level');
-            const prevBtn = document.getElementById('prev-btn');
-            const nextBtn = document.getElementById('next-btn');
-            const commentForm = document.querySelector('.comment-form');
-            const commentInput = document.querySelector('.comment-input');
-            const commentList = document.querySelector('.comment-list');
-
-            let currentImageIndex = 0;
-            let currentZoom = 100;
-            let images = [];
-
-            // Initialize gallery
+            const passwordScreen = document.getElementById('password-screen');
+            const firstPasswordInput = document.getElementById('first-password');
+            const secondPasswordInput = document.getElementById('second-password');
+            const passwordSubmit = document.getElementById('password-submit');
+            const errorMessage = document.getElementById('error-message');
+            const mainContent = document.getElementById('main-content');
+            
+            // Obfuscated password checking
+            function checkPasswords(firstPass, secondPass) {
+                // First password: "sunomusicchannel"
+                // We'll check it in parts to make it harder to find in the code
+                const firstPart = firstPass === 'sunomu' + 'sicchannel';
+                
+                // Second password: "789456@789456"
+                // Check with some string manipulation
+                const secondPart = secondPass === '789456' + '@' + '789456';
+                
+                return firstPart && secondPart;
+            }
+            
+            passwordSubmit.addEventListener('click', function() {
+                const firstPass = firstPasswordInput.value;
+                const secondPass = secondPasswordInput.value;
+                
+                if (checkPasswords(firstPass, secondPass)) {
+                    // Correct passwords - hide password screen and show content
+                    passwordScreen.style.display = 'none';
+                    mainContent.style.display = 'block';
+                    
+                    // Store access in sessionStorage (will be cleared when browser closes)
+                    sessionStorage.setItem('authenticated', 'true');
+                    
+                    // Initialize the gallery
+                    initGallery();
+                } else {
+                    // Incorrect passwords - show error
+                    errorMessage.style.display = 'block';
+                    firstPasswordInput.value = '';
+                    secondPasswordInput.value = '';
+                    
+                    // Add shake animation to inputs
+                    firstPasswordInput.classList.add('shake');
+                    secondPasswordInput.classList.add('shake');
+                    
+                    setTimeout(() => {
+                        firstPasswordInput.classList.remove('shake');
+                        secondPasswordInput.classList.remove('shake');
+                    }, 500);
+                }
+            });
+            
+            // Check if already authenticated in this session
+            if (sessionStorage.getItem('authenticated') === 'true') {
+                passwordScreen.style.display = 'none';
+                mainContent.style.display = 'block';
+                initGallery();
+            }
+            
+            // Prevent right-click and other common hacking attempts
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                alert('Right-click is disabled for security reasons.');
+            });
+            
+            // Prevent F12 (developer tools)
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'F12' || 
+                    (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+                    (e.ctrlKey && e.shiftKey && e.key === 'J') || 
+                    (e.ctrlKey && e.key === 'U')) {
+                    e.preventDefault();
+                    alert('Developer tools are disabled for security reasons.');
+                }
+            });
+            
+            // Gallery functionality (same as before)
             function initGallery() {
+                // Lightbox functionality
+                const lightbox = document.querySelector('.lightbox');
+                const lightboxImg = document.querySelector('.lightbox-img');
+                const lightboxTitle = document.querySelector('.lightbox-title');
+                const lightboxDesc = document.querySelector('.lightbox-desc');
+                const closeBtn = document.querySelector('.lightbox-close');
+                const galleryItems = document.querySelectorAll('.gallery-item');
+                const downloadBtn = document.querySelector('.download-btn');
+                const loader = document.querySelector('.loader');
+                const filterBtns = document.querySelectorAll('.filter-btn');
+                const shareModal = document.querySelector('.share-modal');
+                const closeShare = document.querySelector('.close-share');
+                const copyLink = document.getElementById('copy-link');
+                const commentsSection = document.querySelector('.comments-section');
+                const commentBtn = document.getElementById('comment-btn');
+                const likeBtn = document.getElementById('like-btn');
+                const zoomIn = document.getElementById('zoom-in');
+                const zoomOut = document.getElementById('zoom-out');
+                const zoomLevel = document.getElementById('zoom-level');
+                const prevBtn = document.getElementById('prev-btn');
+                const nextBtn = document.getElementById('next-btn');
+                const commentForm = document.querySelector('.comment-form');
+                const commentInput = document.querySelector('.comment-input');
+                const commentList = document.querySelector('.comment-list');
+
+                let currentImageIndex = 0;
+                let currentZoom = 100;
+                let images = [];
+
+                // Initialize gallery
                 images = Array.from(galleryItems).map(item => ({
                     src: item.querySelector('img').src,
                     title: item.querySelector('.image-title').textContent,
@@ -825,171 +1113,168 @@
                             '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
                     });
                 });
-            }
 
-            // Open lightbox
-            function openLightbox(index) {
-                loader.classList.add('active');
-                
-                setTimeout(() => {
-                    currentImageIndex = index;
-                    const image = images[index];
-                    lightboxImg.src = image.src;
-                    lightboxTitle.textContent = image.title;
-                    lightboxDesc.textContent = image.desc;
-                    downloadBtn.setAttribute('data-src', image.src);
-                    downloadBtn.setAttribute('download', image.title.replace(/\s+/g, '_') + '.jpg');
+                // Open lightbox
+                function openLightbox(index) {
+                    loader.classList.add('active');
                     
-                    // Reset zoom and comments
-                    currentZoom = 100;
-                    lightboxImg.style.transform = 'scale(1)';
-                    zoomLevel.textContent = '100%';
-                    commentsSection.classList.remove('active');
-                    
-                    lightbox.classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                    loader.classList.remove('active');
-                }, 500);
-            }
-
-            // Close lightbox
-            function closeLightbox() {
-                lightbox.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
-
-            // Navigation functions
-            function showPrevImage() {
-                currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
-                openLightbox(currentImageIndex);
-            }
-
-            function showNextImage() {
-                currentImageIndex = (currentImageIndex + 1) % images.length;
-                openLightbox(currentImageIndex);
-            }
-
-            // Zoom functions
-            function zoomInImage() {
-                if (currentZoom < 200) {
-                    currentZoom += 10;
-                    lightboxImg.style.transform = `scale(${currentZoom / 100})`;
-                    zoomLevel.textContent = `${currentZoom}%`;
+                    setTimeout(() => {
+                        currentImageIndex = index;
+                        const image = images[index];
+                        lightboxImg.src = image.src;
+                        lightboxTitle.textContent = image.title;
+                        lightboxDesc.textContent = image.desc;
+                        downloadBtn.setAttribute('data-src', image.src);
+                        downloadBtn.setAttribute('download', image.title.replace(/\s+/g, '_') + '.jpg');
+                        
+                        // Reset zoom and comments
+                        currentZoom = 100;
+                        lightboxImg.style.transform = 'scale(1)';
+                        zoomLevel.textContent = '100%';
+                        commentsSection.classList.remove('active');
+                        
+                        lightbox.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                        loader.classList.remove('active');
+                    }, 500);
                 }
-            }
 
-            function zoomOutImage() {
-                if (currentZoom > 50) {
-                    currentZoom -= 10;
-                    lightboxImg.style.transform = `scale(${currentZoom / 100})`;
-                    zoomLevel.textContent = `${currentZoom}%`;
+                // Close lightbox
+                function closeLightbox() {
+                    lightbox.classList.remove('active');
+                    document.body.style.overflow = 'auto';
                 }
-            }
 
-            // Filter functionality
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    
-                    const filter = btn.dataset.filter;
-                    galleryItems.forEach(item => {
-                        if (filter === 'all' || item.dataset.category === filter) {
-                            item.style.display = 'block';
-                        } else {
-                            item.style.display = 'none';
-                        }
+                // Navigation functions
+                function showPrevImage() {
+                    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+                    openLightbox(currentImageIndex);
+                }
+
+                function showNextImage() {
+                    currentImageIndex = (currentImageIndex + 1) % images.length;
+                    openLightbox(currentImageIndex);
+                }
+
+                // Zoom functions
+                function zoomInImage() {
+                    if (currentZoom < 200) {
+                        currentZoom += 10;
+                        lightboxImg.style.transform = `scale(${currentZoom / 100})`;
+                        zoomLevel.textContent = `${currentZoom}%`;
+                    }
+                }
+
+                function zoomOutImage() {
+                    if (currentZoom > 50) {
+                        currentZoom -= 10;
+                        lightboxImg.style.transform = `scale(${currentZoom / 100})`;
+                        zoomLevel.textContent = `${currentZoom}%`;
+                    }
+                }
+
+                // Filter functionality
+                filterBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        filterBtns.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        
+                        const filter = btn.dataset.filter;
+                        galleryItems.forEach(item => {
+                            if (filter === 'all' || item.dataset.category === filter) {
+                                item.style.display = 'block';
+                            } else {
+                                item.style.display = 'none';
+                            }
+                        });
                     });
                 });
-            });
 
-            // Event listeners
-            closeBtn.addEventListener('click', closeLightbox);
-            lightbox.addEventListener('click', (e) => {
-                if (e.target === lightbox) closeLightbox();
-            });
-            prevBtn.addEventListener('click', showPrevImage);
-            nextBtn.addEventListener('click', showNextImage);
-            zoomIn.addEventListener('click', zoomInImage);
-            zoomOut.addEventListener('click', zoomOutImage);
-            shareBtn.addEventListener('click', () => shareModal.classList.add('active'));
-            closeShare.addEventListener('click', () => shareModal.classList.remove('active'));
-            commentBtn.addEventListener('click', () => commentsSection.classList.toggle('active'));
-            likeBtn.addEventListener('click', () => {
-                likeBtn.classList.toggle('liked');
-                likeBtn.innerHTML = likeBtn.classList.contains('liked') ? 
-                    '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
-                
-                // Also update the thumbnail like button
-                images[currentImageIndex].element.querySelector('.like-btn').classList.toggle('liked');
-                images[currentImageIndex].element.querySelector('.like-btn').innerHTML = 
-                    likeBtn.classList.contains('liked') ? 
-                    '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
-            });
-
-            // Copy link functionality
-            copyLink.addEventListener('click', () => {
-                const linkInput = document.querySelector('.share-link input');
-                linkInput.select();
-                document.execCommand('copy');
-                copyLink.textContent = 'Copied!';
-                setTimeout(() => {
-                    copyLink.textContent = 'Copy';
-                }, 2000);
-            });
-
-            // Keyboard navigation
-            document.addEventListener('keydown', (e) => {
-                if (!lightbox.classList.contains('active')) return;
-                
-                switch(e.key) {
-                    case 'Escape':
-                        closeLightbox();
-                        break;
-                    case 'ArrowLeft':
-                        showPrevImage();
-                        break;
-                    case 'ArrowRight':
-                        showNextImage();
-                        break;
-                    case '+':
-                    case '=':
-                        zoomInImage();
-                        break;
-                    case '-':
-                        zoomOutImage();
-                        break;
-                }
-            });
-
-            // Comment functionality
-            commentForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const commentText = commentInput.value.trim();
-                if (commentText) {
-                    const now = new Date();
-                    const commentDate = now.toLocaleDateString() + ' at ' + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                // Event listeners
+                closeBtn.addEventListener('click', closeLightbox);
+                lightbox.addEventListener('click', (e) => {
+                    if (e.target === lightbox) closeLightbox();
+                });
+                prevBtn.addEventListener('click', showPrevImage);
+                nextBtn.addEventListener('click', showNextImage);
+                zoomIn.addEventListener('click', zoomInImage);
+                zoomOut.addEventListener('click', zoomOutImage);
+                shareBtn.addEventListener('click', () => shareModal.classList.add('active'));
+                closeShare.addEventListener('click', () => shareModal.classList.remove('active'));
+                commentBtn.addEventListener('click', () => commentsSection.classList.toggle('active'));
+                likeBtn.addEventListener('click', () => {
+                    likeBtn.classList.toggle('liked');
+                    likeBtn.innerHTML = likeBtn.classList.contains('liked') ? 
+                        '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
                     
-                    const commentDiv = document.createElement('div');
-                    commentDiv.className = 'comment';
-                    commentDiv.innerHTML = `
-                        <div class="comment-header">
-                            <span class="comment-author">You</span>
-                            <span class="comment-date">Just now</span>
-                        </div>
-                        <div class="comment-text">${commentText}</div>
-                    `;
-                    
-                    commentList.prepend(commentDiv);
-                    commentInput.value = '';
-                    
-                    // Scroll to the new comment
-                    commentDiv.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
+                    // Also update the thumbnail like button
+                    images[currentImageIndex].element.querySelector('.like-btn').classList.toggle('liked');
+                    images[currentImageIndex].element.querySelector('.like-btn').innerHTML = 
+                        likeBtn.classList.contains('liked') ? 
+                        '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
+                });
 
-            // Initialize the gallery
-            initGallery();
+                // Copy link functionality
+                copyLink.addEventListener('click', () => {
+                    const linkInput = document.querySelector('.share-link input');
+                    linkInput.select();
+                    document.execCommand('copy');
+                    copyLink.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyLink.textContent = 'Copy';
+                    }, 2000);
+                });
+
+                // Keyboard navigation
+                document.addEventListener('keydown', (e) => {
+                    if (!lightbox.classList.contains('active')) return;
+                    
+                    switch(e.key) {
+                        case 'Escape':
+                            closeLightbox();
+                            break;
+                        case 'ArrowLeft':
+                            showPrevImage();
+                            break;
+                        case 'ArrowRight':
+                            showNextImage();
+                            break;
+                        case '+':
+                        case '=':
+                            zoomInImage();
+                            break;
+                        case '-':
+                            zoomOutImage();
+                            break;
+                    }
+                });
+
+                // Comment functionality
+                commentForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const commentText = commentInput.value.trim();
+                    if (commentText) {
+                        const now = new Date();
+                        const commentDate = now.toLocaleDateString() + ' at ' + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        
+                        const commentDiv = document.createElement('div');
+                        commentDiv.className = 'comment';
+                        commentDiv.innerHTML = `
+                            <div class="comment-header">
+                                <span class="comment-author">You</span>
+                                <span class="comment-date">Just now</span>
+                            </div>
+                            <div class="comment-text">${commentText}</div>
+                        `;
+                        
+                        commentList.prepend(commentDiv);
+                        commentInput.value = '';
+                        
+                        // Scroll to the new comment
+                        commentDiv.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            }
         });
     </script>
 </body>
