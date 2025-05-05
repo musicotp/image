@@ -766,6 +766,168 @@
         font-size: 1.5rem;
     }
 }
+        /* Short Videos Section Styles */
+.shorts-section {
+    padding: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.shorts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.short-video {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.short-video:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.video-player {
+    position: relative;
+    width: 100%;
+    padding-top: 177.78%; /* 9:16 Aspect Ratio for vertical videos */
+    background: #000;
+}
+
+.video-player video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.video-player:hover .video-controls {
+    opacity: 1;
+}
+
+.play-pause, .sound-toggle {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.play-pause:hover, .sound-toggle:hover {
+    background: var(--primary);
+    transform: scale(1.1);
+}
+
+.video-progress {
+    flex-grow: 1;
+}
+
+.video-progress progress {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.video-progress progress::-webkit-progress-bar {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+}
+
+.video-progress progress::-webkit-progress-value {
+    background: var(--primary);
+    border-radius: 2px;
+}
+
+.video-meta {
+    padding: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.creator-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.creator-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.creator-name {
+    font-size: 0.9rem;
+    color: white;
+}
+
+.video-caption {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.4;
+}
+
+.video-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.video-stats span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.video-stats span:hover {
+    color: var(--primary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .shorts-container {
+        grid-template-columns: 1fr;
+    }
+}
     </style>
 </head>
 <body>
@@ -861,6 +1023,95 @@
                 <button class="like-btn"><i class="far fa-heart"></i></button>
             </div>
         </div>
+        <!-- Short Videos Section -->
+<section class="shorts-section">
+    <h2 class="section-title">Short Videos</h2>
+    <div class="shorts-container">
+        <!-- Short Video 1 -->
+        <div class="short-video">
+            <div class="video-player">
+                <video loop controls playsinline poster="https://source.unsplash.com/random/450x800/?short,video">
+                    <source src="output.mp4" type="video/mp4">
+                </video>
+                <div class="video-controls">
+                    <button class="play-pause"><i class="fas fa-play"></i></button>
+                    <div class="video-progress">
+                        <progress value="0" max="100"></progress>
+                    </div>
+                    <button class="sound-toggle"><i class="fas fa-volume-up"></i></button>
+                </div>
+            </div>
+            <div class="video-meta">
+                <div class="creator-info">
+                    <img src="https://source.unsplash.com/random/100x100/?profile" alt="Creator" class="creator-avatar">
+                    <span class="creator-name">@traveler123</span>
+                </div>
+                <p class="video-caption">Beautiful sunset at the beach today! 🌅 #sunset #beach</p>
+                <div class="video-stats">
+                    <span><i class="fas fa-heart"></i> 1.2K</span>
+                    <span><i class="fas fa-comment"></i> 42</span>
+                    <span><i class="fas fa-share"></i> Share</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Short Video 2 -->
+        <div class="short-video">
+            <div class="video-player">
+                <video loop controls playsinline poster="https://source.unsplash.com/random/450x800/?food,cooking">
+                    <source src="2.mp4" type="video/mp4">
+                </video>
+                <div class="video-controls">
+                    <button class="play-pause"><i class="fas fa-play"></i></button>
+                    <div class="video-progress">
+                        <progress value="0" max="100"></progress>
+                    </div>
+                    <button class="sound-toggle"><i class="fas fa-volume-up"></i></button>
+                </div>
+            </div>
+            <div class="video-meta">
+                <div class="creator-info">
+                    <img src="https://source.unsplash.com/random/100x100/?chef" alt="Creator" class="creator-avatar">
+                    <span class="creator-name">@cheflife</span>
+                </div>
+                <p class="video-caption">Quick 30-second pasta recipe you need to try! 🍝 #food #cooking</p>
+                <div class="video-stats">
+                    <span><i class="fas fa-heart"></i> 3.4K</span>
+                    <span><i class="fas fa-comment"></i> 128</span>
+                    <span><i class="fas fa-share"></i> Share</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Short Video 3 -->
+        <div class="short-video">
+            <div class="video-player">
+                <video loop controls playsinline poster="https://source.unsplash.com/random/450x800/?workout,fitness">
+                    <source src="3.mp4" type="video/mp4">
+                </video>
+                <div class="video-controls">
+                    <button class="play-pause"><i class="fas fa-play"></i></button>
+                    <div class="video-progress">
+                        <progress value="0" max="100"></progress>
+                    </div>
+                    <button class="sound-toggle"><i class="fas fa-volume-up"></i></button>
+                </div>
+            </div>
+            <div class="video-meta">
+                <div class="creator-info">
+                    <img src="https://source.unsplash.com/random/100x100/?gym" alt="Creator" class="creator-avatar">
+                    <span class="creator-name">@fitguru</span>
+                </div>
+                <p class="video-caption">5 minute ab workout you can do anywhere! 💪 #fitness #workout</p>
+                <div class="video-stats">
+                    <span><i class="fas fa-heart"></i> 8.7K</span>
+                    <span><i class="fas fa-comment"></i> 312</span>
+                    <span><i class="fas fa-share"></i> Share</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 <!-- Video Section -->
 <section class="video-section">
     <h2 class="section-title">Video Gallery</h2>
@@ -1276,6 +1527,63 @@
                 });
             }
         });
+        // Short Videos Player Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const shortVideos = document.querySelectorAll('.short-video video');
+    
+    shortVideos.forEach(video => {
+        const container = video.closest('.short-video');
+        const playPauseBtn = container.querySelector('.play-pause');
+        const soundToggle = container.querySelector('.sound-toggle');
+        const progress = container.querySelector('progress');
+        
+        // Play/Pause toggle
+        playPauseBtn.addEventListener('click', () => {
+            if (video.paused) {
+                video.play();
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                video.pause();
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        });
+        
+        // Video click to play/pause
+        video.addEventListener('click', () => {
+            if (video.paused) {
+                video.play();
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                video.pause();
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        });
+        
+        // Sound toggle
+        soundToggle.addEventListener('click', () => {
+            video.muted = !video.muted;
+            soundToggle.innerHTML = video.muted ? 
+                '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
+        });
+        
+        // Update progress bar
+        video.addEventListener('timeupdate', () => {
+            progress.value = (video.currentTime / video.duration) * 100;
+        });
+        
+        // Click on progress bar to seek
+        progress.addEventListener('click', (e) => {
+            const pos = (e.pageX - progress.getBoundingClientRect().left) / progress.offsetWidth;
+            video.currentTime = pos * video.duration;
+        });
+        
+        // Reset when video ends
+        video.addEventListener('ended', () => {
+            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            video.currentTime = 0;
+        });
+    });
+});
     </script>
 </body>
 </html>
