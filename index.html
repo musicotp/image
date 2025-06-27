@@ -86,10 +86,14 @@
             color: var(--light-color);
         }
         
+        .password-input-container {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        
         .password-input {
             width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 1rem;
+            padding: 12px 45px 12px 15px;
             border: 2px solid var(--secondary-color);
             border-radius: 5px;
             background-color: rgba(255, 255, 255, 0.1);
@@ -102,6 +106,24 @@
             outline: none;
             border-color: var(--accent-color);
             box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--light-color);
+            cursor: pointer;
+            font-size: 1rem;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        
+        .toggle-password:hover {
+            opacity: 1;
         }
         
         .password-btn {
@@ -295,8 +317,15 @@
         
         .gallery-slide img {
             width: 100%;
-            height: auto;
+            height: 400px;
+            object-fit: cover;
             display: block;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .gallery-slide img:hover {
+            transform: scale(1.02);
         }
         
         .slide-caption {
@@ -361,6 +390,45 @@
             transform: scale(1.2);
         }
         
+        /* Image Modal */
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .image-modal-content {
+            max-width: 90%;
+            max-height: 90%;
+        }
+        
+        .image-modal-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close-modal:hover {
+            color: var(--accent-color);
+        }
+        
         /* Footer */
         .footer {
             text-align: center;
@@ -405,6 +473,10 @@
                 height: 30px;
                 font-size: 0.8rem;
             }
+            
+            .gallery-slide img {
+                height: 300px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -424,6 +496,10 @@
             .copy-btn {
                 margin-top: 0.5rem;
                 align-self: flex-end;
+            }
+            
+            .gallery-slide img {
+                height: 250px;
             }
         }
         
@@ -454,13 +530,27 @@
             <h2><i class="fas fa-lock"></i> Secure Access</h2>
             <p>Please enter both passwords to access the secure content.</p>
             
-            <input type="password" id="password1" class="password-input" placeholder="Enter Password 1" autocomplete="off">
+            <div class="password-input-container">
+                <input type="password" id="password1" class="password-input" placeholder="Enter Password 1" autocomplete="off">
+                <button class="toggle-password" id="togglePassword1"><i class="fas fa-eye"></i></button>
+            </div>
             <div id="error1" class="error-message">Incorrect password</div>
             
-            <input type="password" id="password2" class="password-input" placeholder="Enter Password 2" autocomplete="off">
+            <div class="password-input-container">
+                <input type="password" id="password2" class="password-input" placeholder="Enter Password 2" autocomplete="off">
+                <button class="toggle-password" id="togglePassword2"><i class="fas fa-eye"></i></button>
+            </div>
             <div id="error2" class="error-message">Incorrect password</div>
             
             <button id="submitBtn" class="password-btn">Access Secure Content</button>
+        </div>
+    </div>
+    
+    <!-- Image Modal -->
+    <div class="image-modal" id="imageModal">
+        <span class="close-modal">&times;</span>
+        <div class="image-modal-content">
+            <img id="modalImage" src="" alt="Enlarged view">
         </div>
     </div>
     
@@ -512,11 +602,6 @@
                 <p>bollywood</p>
                 <a href="#">https://aagmaal.to/2023/08/13/millionaires-son-and-daughter-18-arkestra-dance-night-club-viral-video-2023-uncut-mms-porn/</a>
             </div>
-                <p>Access our most frequently used resources with these quick links.</p>
-                <a href="#">Support Center</a> | 
-                <a href="#">Documentation</a> | 
-                <a href="#">Community Forum</a>
-            </div>
         </section>
         
         <!-- Gallery Section -->
@@ -526,14 +611,14 @@
             <div class="gallery-container">
                 <div class="gallery-slider" id="gallerySlider">
                     <div class="gallery-slide">
-                        <img src="erge.png" alt="Nature">
-                        <div class="slide-caption">Original image </div>
+                        <img src="erge.png" alt="Nature" data-src="erge.png">
+                        <div class="slide-caption">Original image</div>
                     </div>
                     <div class="gallery-slide">
-                        <img src="legal.png" alt="City">
-                        <div class="slide-caption">edited fashon court image </div>
+                        <img src="legal.png" alt="City" data-src="legal.png">
+                        <div class="slide-caption">Edited fashion court image</div>
                     </div>
-                   
+                </div>
                 
                 <div class="gallery-nav">
                     <button class="gallery-nav-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
@@ -561,6 +646,8 @@
         const password2 = document.getElementById('password2');
         const error1 = document.getElementById('error1');
         const error2 = document.getElementById('error2');
+        const togglePassword1 = document.getElementById('togglePassword1');
+        const togglePassword2 = document.getElementById('togglePassword2');
         
         // Correct passwords
         const correctPassword1 = "sunomusicchannel";
@@ -569,6 +656,19 @@
         // Eavesdropping protection
         let attempts = 0;
         const maxAttempts = 3;
+        
+        // Toggle password visibility
+        togglePassword1.addEventListener('click', function() {
+            const type = password1.getAttribute('type') === 'password' ? 'text' : 'password';
+            password1.setAttribute('type', type);
+            this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
+        
+        togglePassword2.addEventListener('click', function() {
+            const type = password2.getAttribute('type') === 'password' ? 'text' : 'password';
+            password2.setAttribute('type', type);
+            this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
         
         // Disable right click, text selection, etc.
         document.addEventListener('contextmenu', function(e) {
@@ -669,6 +769,11 @@
             });
         }
         
+        // Image Modal functionality
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const closeModal = document.querySelector('.close-modal');
+        
         // Gallery functionality
         function initGallery() {
             const slider = document.getElementById('gallerySlider');
@@ -756,7 +861,35 @@
             slider.addEventListener('mouseleave', () => {
                 slideInterval = setInterval(nextSlide, 5000);
             });
+            
+            // Add click event to gallery images to open modal
+            const galleryImages = document.querySelectorAll('.gallery-slide img');
+            galleryImages.forEach(img => {
+                img.addEventListener('click', function() {
+                    modalImage.src = this.getAttribute('data-src') || this.src;
+                    modalImage.alt = this.alt;
+                    imageModal.style.display = 'flex';
+                });
+            });
         }
+        
+        // Close modal when clicking X or outside image
+        closeModal.addEventListener('click', function() {
+            imageModal.style.display = 'none';
+        });
+        
+        imageModal.addEventListener('click', function(e) {
+            if (e.target === imageModal) {
+                imageModal.style.display = 'none';
+            }
+        });
+        
+        // Close modal with ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && imageModal.style.display === 'flex') {
+                imageModal.style.display = 'none';
+            }
+        });
         
         // Additional security - prevent iframe embedding
         if (window.top !== window.self) {
