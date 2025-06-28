@@ -13,6 +13,7 @@
             --light-color: #ecf0f1;
             --dark-color: #2c3e50;
             --success-color: #2ecc71;
+            --warning-color: #f39c12;
         }
         
         * {
@@ -27,20 +28,7 @@
             color: var(--light-color);
             min-height: 100vh;
             overflow-x: hidden;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-        }
-        
-        /* Disable right click */
-        body {
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
+            line-height: 1.6;
         }
         
         /* Password Modal */
@@ -153,12 +141,13 @@
             display: none;
         }
         
-        /* Main Content (hidden initially) */
+        /* Main Content */
         .main-content {
             display: none;
             padding: 2rem;
             max-width: 1200px;
             margin: 0 auto;
+            animation: fadeIn 0.5s ease-out;
         }
         
         /* Header */
@@ -225,6 +214,7 @@
             margin-bottom: 1rem;
             border-left: 4px solid var(--secondary-color);
             transition: all 0.3s;
+            position: relative;
         }
         
         .notice-item:hover {
@@ -253,6 +243,7 @@
             display: inline-block;
             margin-top: 0.5rem;
             transition: color 0.3s;
+            word-break: break-all;
         }
         
         .notice-item a:hover {
@@ -269,6 +260,7 @@
             cursor: pointer;
             font-size: 0.8rem;
             transition: all 0.3s;
+            margin-left: 5px;
         }
         
         .copy-btn:hover {
@@ -278,6 +270,22 @@
         
         .copy-btn i {
             margin-right: 5px;
+        }
+        
+        .copy-link-btn {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: var(--success-color);
+        }
+        
+        .copy-link-btn:hover {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        /* Selection styles */
+        ::selection {
+            background-color: var(--secondary-color);
+            color: white;
         }
         
         /* Gallery Section */
@@ -308,17 +316,23 @@
         .gallery-slider {
             display: flex;
             transition: transform 0.5s ease;
+            height: 60vh;
+            max-height: 600px;
         }
         
         .gallery-slide {
             min-width: 100%;
             position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
         }
         
         .gallery-slide img {
-            width: 100%;
-            height: 400px;
-            object-fit: cover;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
             display: block;
             cursor: pointer;
             transition: transform 0.3s;
@@ -373,6 +387,7 @@
             display: flex;
             justify-content: center;
             margin-top: 1rem;
+            flex-wrap: wrap;
         }
         
         .gallery-dot {
@@ -407,12 +422,15 @@
         .image-modal-content {
             max-width: 90%;
             max-height: 90%;
+            position: relative;
         }
         
         .image-modal-content img {
             max-width: 100%;
             max-height: 90vh;
             object-fit: contain;
+            border: 2px solid var(--secondary-color);
+            border-radius: 5px;
         }
         
         .close-modal {
@@ -423,6 +441,7 @@
             font-size: 2rem;
             cursor: pointer;
             transition: color 0.3s;
+            z-index: 10;
         }
         
         .close-modal:hover {
@@ -450,6 +469,46 @@
             animation: pulse 2s infinite;
         }
         
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+        }
+        
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             .password-container {
@@ -474,8 +533,8 @@
                 font-size: 0.8rem;
             }
             
-            .gallery-slide img {
-                height: 300px;
+            .gallery-slider {
+                height: 50vh;
             }
         }
         
@@ -498,8 +557,13 @@
                 align-self: flex-end;
             }
             
-            .gallery-slide img {
-                height: 250px;
+            .gallery-slider {
+                height: 40vh;
+            }
+            
+            .slide-caption {
+                padding: 0.5rem;
+                font-size: 0.9rem;
             }
         }
         
@@ -520,6 +584,38 @@
         .security-features i {
             color: var(--success-color);
             margin-right: 5px;
+        }
+        
+        /* Selection controls */
+        .selection-controls {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            color: var(--light-color);
+            display: none;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .selection-controls button {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: var(--secondary-color);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            margin-left: 5px;
+        }
+        
+        .selection-controls button:hover {
+            background-color: var(--secondary-color);
+            color: white;
         }
     </style>
 </head>
@@ -554,6 +650,13 @@
         </div>
     </div>
     
+    <!-- Selection Controls -->
+    <div class="selection-controls" id="selectionControls">
+        <span>Selected text:</span>
+        <button id="copySelectionBtn"><i class="far fa-copy"></i> Copy</button>
+        <button id="clearSelectionBtn"><i class="fas fa-times"></i> Clear</button>
+    </div>
+    
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
         <!-- Header -->
@@ -573,34 +676,49 @@
             <div class="notice-item">
                 <h3>
                     Important Announcement
-                    <button class="copy-btn" onclick="copyToClipboard('Important Announcement')">
-                        <i class="far fa-copy"></i> Copy
-                    </button>
+                    <div>
+                        <button class="copy-btn" onclick="copyToClipboard('Important Announcement', this)">
+                            <i class="far fa-copy"></i> Copy Title
+                        </button>
+                        <button class="copy-btn copy-link-btn" onclick="copyLinkToClipboard('https://nwoleaks.top/young-paki-threesome-smooching-on-tango-live-show-2/', this)">
+                            <i class="fas fa-link"></i> Copy Link
+                        </button>
+                    </div>
                 </h3>
-                <p>Leaked videos and images site </p>
-                <a href="#">https://nwoleaks.top/young-paki-threesome-smooching-on-tango-live-show-2/</a>
+                <p>Leaked videos and images site</p>
+                <a href="https://nwoleaks.top/young-paki-threesome-smooching-on-tango-live-show-2/" target="_blank">https://nwoleaks.top/young-paki-threesome-smooching-on-tango-live-show-2/</a>
             </div>
             
             <div class="notice-item">
                 <h3>
                     Latest Updates
-                    <button class="copy-btn" onclick="copyToClipboard('Latest Updates')">
-                        <i class="far fa-copy"></i> Copy
-                    </button>
+                    <div>
+                        <button class="copy-btn" onclick="copyToClipboard('Latest Updates', this)">
+                            <i class="far fa-copy"></i> Copy Title
+                        </button>
+                        <button class="copy-btn copy-link-btn" onclick="copyLinkToClipboard('https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2', this)">
+                            <i class="fas fa-link"></i> Copy Link
+                        </button>
+                    </div>
                 </h3>
                 <p>bollywood</p>
-                <a href="#">https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2</a>
+                <a href="https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2" target="_blank">https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2</a>
             </div>
             
-             <div class="notice-item">
+            <div class="notice-item">
                 <h3>
                     Latest Updates
-                    <button class="copy-btn" onclick="copyToClipboard('Latest Updates')">
-                        <i class="far fa-copy"></i> Copy
-                    </button>
+                    <div>
+                        <button class="copy-btn" onclick="copyToClipboard('Latest Updates', this)">
+                            <i class="far fa-copy"></i> Copy Title
+                        </button>
+                        <button class="copy-btn copy-link-btn" onclick="copyLinkToClipboard('https://aagmaal.to/2023/08/13/millionaires-son-and-daughter-18-arkestra-dance-night-club-viral-video-2023-uncut-mms-porn/', this)">
+                            <i class="fas fa-link"></i> Copy Link
+                        </button>
+                    </div>
                 </h3>
                 <p>bollywood</p>
-                <a href="#">https://aagmaal.to/2023/08/13/millionaires-son-and-daughter-18-arkestra-dance-night-club-viral-video-2023-uncut-mms-porn/</a>
+                <a href="https://aagmaal.to/2023/08/13/millionaires-son-and-daughter-18-arkestra-dance-night-club-viral-video-2023-uncut-mms-porn/" target="_blank">https://aagmaal.to/2023/08/13/millionaires-son-and-daughter-18-arkestra-dance-night-club-viral-video-2023-uncut-mms-porn/</a>
             </div>
         </section>
         
@@ -628,6 +746,12 @@
             
             <div class="gallery-dots" id="galleryDots">
                 <!-- Dots will be added dynamically -->
+            </div>
+            
+            <div style="text-align: center; margin-top: 1rem;">
+                <button class="password-btn" style="width: auto; display: inline-block; padding: 10px 20px;" onclick="toggleFullscreen()">
+                    <i class="fas fa-expand"></i> Fullscreen Gallery
+                </button>
             </div>
         </section>
         
@@ -673,7 +797,7 @@
         // Disable right click, text selection, etc.
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
-            alert('Right-click is disabled for security reasons.');
+            showSecurityAlert('Right-click is disabled for security reasons.');
         });
         
         document.addEventListener('keydown', function(e) {
@@ -683,9 +807,34 @@
                 (e.ctrlKey && e.shiftKey && e.key === 'J') || 
                 (e.ctrlKey && e.key === 'u')) {
                 e.preventDefault();
-                alert('This action is disabled for security reasons.');
+                showSecurityAlert('This action is disabled for security reasons.');
             }
         });
+        
+        function showSecurityAlert(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.top = '20px';
+            alertDiv.style.left = '50%';
+            alertDiv.style.transform = 'translateX(-50%)';
+            alertDiv.style.backgroundColor = 'var(--accent-color)';
+            alertDiv.style.color = 'white';
+            alertDiv.style.padding = '10px 20px';
+            alertDiv.style.borderRadius = '5px';
+            alertDiv.style.boxShadow = '0 3px 10px rgba(0,0,0,0.3)';
+            alertDiv.style.zIndex = '9999';
+            alertDiv.style.animation = 'fadeIn 0.3s';
+            alertDiv.textContent = message;
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.style.animation = 'fadeOut 0.5s';
+                setTimeout(() => {
+                    document.body.removeChild(alertDiv);
+                }, 500);
+            }, 3000);
+        }
         
         submitBtn.addEventListener('click', function() {
             const enteredPassword1 = password1.value;
@@ -721,12 +870,15 @@
                 
                 // Start gallery functionality
                 initGallery();
+                
+                // Initialize selection controls
+                initSelectionControls();
             } else {
                 // Incorrect passwords
                 attempts++;
                 
                 if (attempts >= maxAttempts) {
-                    alert('Too many failed attempts. Please try again later.');
+                    showSecurityAlert('Too many failed attempts. Please try again later.');
                     submitBtn.disabled = true;
                     setTimeout(() => {
                         submitBtn.disabled = false;
@@ -750,22 +902,42 @@
         });
         
         // Copy to clipboard function
-        function copyToClipboard(text) {
+        function copyToClipboard(text, button) {
             navigator.clipboard.writeText(text).then(() => {
                 // Show feedback
-                const originalText = event.target.innerHTML;
-                event.target.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                event.target.style.backgroundColor = 'var(--success-color)';
-                event.target.style.color = 'white';
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                button.style.backgroundColor = 'var(--success-color)';
+                button.style.color = 'white';
                 
                 setTimeout(() => {
-                    event.target.innerHTML = originalText;
-                    event.target.style.backgroundColor = 'rgba(52, 152, 219, 0.2)';
-                    event.target.style.color = 'var(--secondary-color)';
+                    button.innerHTML = originalText;
+                    button.style.backgroundColor = 'rgba(52, 152, 219, 0.2)';
+                    button.style.color = 'var(--secondary-color)';
                 }, 2000);
             }).catch(err => {
                 console.error('Failed to copy: ', err);
-                alert('Failed to copy text. Please try again.');
+                showSecurityAlert('Failed to copy text. Please try again.');
+            });
+        }
+        
+        // Copy link to clipboard function
+        function copyLinkToClipboard(link, button) {
+            navigator.clipboard.writeText(link).then(() => {
+                // Show feedback
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                button.style.backgroundColor = 'var(--success-color)';
+                button.style.color = 'white';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.backgroundColor = 'rgba(46, 204, 113, 0.2)';
+                    button.style.color = 'var(--success-color)';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                showSecurityAlert('Failed to copy link. Please try again.');
             });
         }
         
@@ -828,6 +1000,17 @@
             nextBtn.addEventListener('click', nextSlide);
             prevBtn.addEventListener('click', prevSlide);
             
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (imageModal.style.display !== 'flex') {
+                    if (e.key === 'ArrowRight') {
+                        nextSlide();
+                    } else if (e.key === 'ArrowLeft') {
+                        prevSlide();
+                    }
+                }
+            });
+            
             // Swipe functionality for mobile
             let touchStartX = 0;
             let touchEndX = 0;
@@ -869,18 +1052,44 @@
                     modalImage.src = this.getAttribute('data-src') || this.src;
                     modalImage.alt = this.alt;
                     imageModal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
                 });
             });
+        }
+        
+        // Fullscreen gallery
+        function toggleFullscreen() {
+            const galleryContainer = document.querySelector('.gallery-container');
+            
+            if (!document.fullscreenElement) {
+                if (galleryContainer.requestFullscreen) {
+                    galleryContainer.requestFullscreen();
+                } else if (galleryContainer.webkitRequestFullscreen) {
+                    galleryContainer.webkitRequestFullscreen();
+                } else if (galleryContainer.msRequestFullscreen) {
+                    galleryContainer.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
         }
         
         // Close modal when clicking X or outside image
         closeModal.addEventListener('click', function() {
             imageModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
         });
         
         imageModal.addEventListener('click', function(e) {
             if (e.target === imageModal) {
                 imageModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
             }
         });
         
@@ -888,8 +1097,50 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && imageModal.style.display === 'flex') {
                 imageModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
             }
         });
+        
+        // Selection controls functionality
+        function initSelectionControls() {
+            const selectionControls = document.getElementById('selectionControls');
+            const copySelectionBtn = document.getElementById('copySelectionBtn');
+            const clearSelectionBtn = document.getElementById('clearSelectionBtn');
+            
+            let selectedText = '';
+            
+            document.addEventListener('selectionchange', function() {
+                const selection = window.getSelection();
+                if (selection.toString().trim().length > 0) {
+                    selectedText = selection.toString();
+                    selectionControls.style.display = 'flex';
+                    
+                    // Position controls near selection
+                    const range = selection.getRangeAt(0);
+                    const rect = range.getBoundingClientRect();
+                    selectionControls.style.bottom = (window.innerHeight - rect.top + 10) + 'px';
+                    selectionControls.style.left = rect.left + 'px';
+                } else {
+                    selectionControls.style.display = 'none';
+                }
+            });
+            
+            copySelectionBtn.addEventListener('click', function() {
+                if (selectedText) {
+                    navigator.clipboard.writeText(selectedText).then(() => {
+                        showSecurityAlert('Text copied to clipboard!');
+                        selectionControls.style.display = 'none';
+                    }).catch(err => {
+                        showSecurityAlert('Failed to copy text. Please try again.');
+                    });
+                }
+            });
+            
+            clearSelectionBtn.addEventListener('click', function() {
+                window.getSelection().removeAllRanges();
+                selectionControls.style.display = 'none';
+            });
+        }
         
         // Additional security - prevent iframe embedding
         if (window.top !== window.self) {
