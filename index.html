@@ -3,1232 +3,467 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Secure Access Vault v3.1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --light-color: #ecf0f1;
-            --dark-color: #2c3e50;
-            --success-color: #2ecc71;
-            --warning-color: #f39c12;
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.5);
+            --danger: #ef4444;
         }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
+
         body {
-            background-color: var(--primary-color);
-            color: var(--light-color);
-            min-height: 100vh;
+            font-family: 'Plus+Jakarta+Sans', sans-serif;
+            background: #020617;
+            color: #f8fafc;
             overflow-x: hidden;
-            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        
-        /* Password Modal */
-        .password-modal {
+
+        .bg-mesh {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
+            z-index: -1;
+            background: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.15) 0, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(30, 64, 175, 0.1) 0, transparent 50%);
         }
-        
-        .password-container {
-            background-color: var(--dark-color);
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-            animation: fadeIn 0.5s ease-out;
-            border: 2px solid var(--secondary-color);
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(25px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
         }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        .input-group:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px var(--primary), 0 0 30px var(--primary-glow);
         }
-        
-        .password-container h2 {
-            margin-bottom: 1.5rem;
-            color: var(--secondary-color);
-            font-size: 1.8rem;
-        }
-        
-        .password-container p {
-            margin-bottom: 1.5rem;
-            color: var(--light-color);
-        }
-        
-        .password-input-container {
+
+        .shimmer-btn {
             position: relative;
-            margin-bottom: 1rem;
-        }
-        
-        .password-input {
-            width: 100%;
-            padding: 12px 45px 12px 15px;
-            border: 2px solid var(--secondary-color);
-            border-radius: 5px;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-        
-        .password-input:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
-        }
-        
-        .toggle-password {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--light-color);
-            cursor: pointer;
-            font-size: 1rem;
-            opacity: 0.7;
-            transition: opacity 0.3s;
-        }
-        
-        .toggle-password:hover {
-            opacity: 1;
-        }
-        
-        .password-btn {
-            background-color: var(--secondary-color);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-            transition: all 0.3s;
-            width: 100%;
-            margin-top: 1rem;
-        }
-        
-        .password-btn:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-        
-        .error-message {
-            color: var(--accent-color);
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-            display: none;
-        }
-        
-        /* Main Content */
-        .main-content {
-            display: none;
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            animation: fadeIn 0.5s ease-out;
-        }
-        
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-            border-bottom: 2px solid var(--secondary-color);
-            margin-bottom: 2rem;
-            animation: slideDown 0.5s ease-out;
-        }
-        
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .logo {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--secondary-color);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-        
-        .logo i {
-            margin-right: 10px;
-            color: var(--accent-color);
-        }
-        
-        /* Notice Board */
-        .notice-board {
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            border: 1px solid var(--secondary-color);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            animation: fadeInUp 0.6s ease-out;
-        }
-        
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .notice-board h2 {
-            color: var(--secondary-color);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-        }
-        
-        .notice-board h2 i {
-            margin-right: 10px;
-        }
-        
-        .notice-item {
-            background-color: rgba(255, 255, 255, 0.05);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            border-left: 4px solid var(--secondary-color);
-            transition: all 0.3s;
-            position: relative;
-        }
-        
-        .notice-item:hover {
-            transform: translateX(5px);
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        
-        .notice-item h3 {
-            color: var(--light-color);
-            margin-bottom: 0.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .notice-item p {
-            color: #bdc3c7;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .notice-item a {
-            color: var(--secondary-color);
-            text-decoration: none;
-            font-size: 0.9rem;
-            display: inline-block;
-            margin-top: 0.5rem;
-            transition: color 0.3s;
-            word-break: break-all;
-        }
-        
-        .notice-item a:hover {
-            color: var(--accent-color);
-            text-decoration: underline;
-        }
-        
-        .copy-btn {
-            background-color: rgba(52, 152, 219, 0.2);
-            color: var(--secondary-color);
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.3s;
-            margin-left: 5px;
-        }
-        
-        .copy-btn:hover {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-        
-        .copy-btn i {
-            margin-right: 5px;
-        }
-        
-        .copy-link-btn {
-            background-color: rgba(46, 204, 113, 0.2);
-            color: var(--success-color);
-        }
-        
-        .copy-link-btn:hover {
-            background-color: var(--success-color);
-            color: white;
-        }
-        
-        /* Selection styles */
-        ::selection {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-        
-        /* Gallery Section */
-        .gallery-section {
-            margin-top: 3rem;
-            animation: fadeIn 0.8s ease-out;
-        }
-        
-        .gallery-section h2 {
-            color: var(--secondary-color);
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-        }
-        
-        .gallery-section h2 i {
-            margin-right: 10px;
-        }
-        
-        .gallery-container {
-            position: relative;
-            width: 100%;
             overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
-        
-        .gallery-slider {
-            display: flex;
-            transition: transform 0.5s ease;
-            height: 60vh;
-            max-height: 600px;
-        }
-        
-        .gallery-slide {
-            min-width: 100%;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #000;
-        }
-        
-        .gallery-slide img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            display: block;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        
-        .gallery-slide img:hover {
-            transform: scale(1.02);
-        }
-        
-        .slide-caption {
+
+        .shimmer-btn::after {
+            content: '';
             position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-            color: white;
-            padding: 1rem;
-            text-align: center;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.15), transparent);
+            transform: rotate(45deg);
+            transition: 0.6s;
+        }
+
+        .shimmer-btn:hover::after {
+            left: 120%;
+        }
+
+        .hidden-vault { display: none; }
+        
+        .privacy-blur {
+            filter: blur(8px);
+            transition: filter 0.3s ease;
         }
         
-        .gallery-nav {
+        .privacy-blur:hover {
+            filter: blur(0);
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(1000%); }
+        }
+
+        .scanline {
             position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 1rem;
-            z-index: 10;
-        }
-        
-        .gallery-nav-btn {
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.3s;
-        }
-        
-        .gallery-nav-btn:hover {
-            background-color: var(--secondary-color);
-            transform: scale(1.1);
-        }
-        
-        .gallery-dots {
-            display: flex;
-            justify-content: center;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        .gallery-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.5);
-            margin: 0 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .gallery-dot.active {
-            background-color: var(--secondary-color);
-            transform: scale(1.2);
-        }
-        
-        /* Image Modal */
-        .image-modal {
-            display: none;
-            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, rgba(59, 130, 246, 0.5), transparent);
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+        }
+
+        .decrypt-progress {
+            height: 4px;
+            background: #1e293b;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .decrypt-bar {
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
+            width: 0%;
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+            transition: width 0.1s linear;
         }
-        
-        .image-modal-content {
-            max-width: 90%;
-            max-height: 90%;
-            position: relative;
-        }
-        
-        .image-modal-content img {
-            max-width: 100%;
-            max-height: 90vh;
-            object-fit: contain;
-            border: 2px solid var(--secondary-color);
-            border-radius: 5px;
-        }
-        
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 2rem;
-            cursor: pointer;
-            transition: color 0.3s;
-            z-index: 10;
-        }
-        
-        .close-modal:hover {
-            color: var(--accent-color);
-        }
-        
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 2rem 0;
-            margin-top: 3rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: #bdc3c7;
-            font-size: 0.9rem;
-        }
-        
-        /* Animations */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        /* Tooltip */
-        .tooltip {
-            position: relative;
-            display: inline-block;
-        }
-        
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 120px;
-            background-color: #555;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -60px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 0.8rem;
-        }
-        
-        .tooltip .tooltiptext::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: #555 transparent transparent transparent;
-        }
-        
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .password-container {
-                padding: 1.5rem;
-            }
-            
-            .main-content {
-                padding: 1rem;
-            }
-            
-            .logo {
-                font-size: 1.5rem;
-            }
-            
-            .notice-board {
-                padding: 1rem;
-            }
-            
-            .gallery-nav-btn {
-                width: 30px;
-                height: 30px;
-                font-size: 0.8rem;
-            }
-            
-            .gallery-slider {
-                height: 50vh;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .password-container {
-                padding: 1rem;
-            }
-            
-            .password-container h2 {
-                font-size: 1.5rem;
-            }
-            
-            .notice-item h3 {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .copy-btn {
-                margin-top: 0.5rem;
-                align-self: flex-end;
-            }
-            
-            .gallery-slider {
-                height: 40vh;
-            }
-            
-            .slide-caption {
-                padding: 0.5rem;
-                font-size: 0.9rem;
-            }
-        }
-        
-        /* Security features */
-        .security-features {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.8rem;
-            color: var(--light-color);
-            display: flex;
-            align-items: center;
-        }
-        
-        .security-features i {
-            color: var(--success-color);
-            margin-right: 5px;
-        }
-        
-        /* Selection controls */
-        .selection-controls {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.8rem;
-            color: var(--light-color);
-            display: none;
-            align-items: center;
-            z-index: 100;
-        }
-        
-        .selection-controls button {
-            background-color: rgba(52, 152, 219, 0.2);
-            color: var(--secondary-color);
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.3s;
-            margin-left: 5px;
-        }
-        
-        .selection-controls button:hover {
-            background-color: var(--secondary-color);
-            color: white;
+
+        .lockout-active {
+            filter: grayscale(1) brightness(0.5);
+            pointer-events: none;
+            cursor: not-allowed;
         }
     </style>
 </head>
-<body>
-    <!-- Password Modal -->
-    <div class="password-modal" id="passwordModal">
-        <div class="password-container">
-            <h2><i class="fas fa-lock"></i> Secure Access</h2>
-            <p>Please enter both passwords to access the secure content.</p>
-            
-            <div class="password-input-container">
-                <input type="password" id="password1" class="password-input" placeholder="Enter Password 1" autocomplete="off">
-                <button class="toggle-password" id="togglePassword1"><i class="fas fa-eye"></i></button>
-            </div>
-            <div id="error1" class="error-message">Incorrect password</div>
-            
-            <div class="password-input-container">
-                <input type="password" id="password2" class="password-input" placeholder="Enter Password 2" autocomplete="off">
-                <button class="toggle-password" id="togglePassword2"><i class="fas fa-eye"></i></button>
-            </div>
-            <div id="error2" class="error-message">Incorrect password</div>
-            
-            <button id="submitBtn" class="password-btn">Access Secure Content</button>
+<body class="p-4 select-none">
+    <div class="bg-mesh"></div>
+    <div class="scanline"></div>
+
+    <!-- Security Alert Overlay -->
+    <div id="security-alert" class="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="text-center space-y-4">
+            <i class="fas fa-triangle-exclamation text-6xl text-red-500 animate-pulse"></i>
+            <h2 class="text-3xl font-black text-white">SECURITY BREACH DETECTED</h2>
+            <p class="text-slate-400">Suspicious window activity detected. Re-authentication required.</p>
+            <button onclick="location.reload()" class="px-8 py-3 bg-red-600 rounded-full font-bold">RE-ESTABLISH HANDSHAKE</button>
         </div>
     </div>
-    
-    <!-- Image Modal -->
-    <div class="image-modal" id="imageModal">
-        <span class="close-modal">&times;</span>
-        <div class="image-modal-content">
-            <img id="modalImage" src="" alt="Enlarged view">
-        </div>
-    </div>
-    
-    <!-- Selection Controls -->
-    <div class="selection-controls" id="selectionControls">
-        <span>Selected text:</span>
-        <button id="copySelectionBtn"><i class="far fa-copy"></i> Copy</button>
-        <button id="clearSelectionBtn"><i class="fas fa-times"></i> Clear</button>
-    </div>
-    
-    <!-- Main Content -->
-    <div class="main-content" id="mainContent">
-        <!-- Header -->
-        <header class="header">
-            <a href="#" class="logo">
-                <i class="fas fa-shield-alt"></i> Secure
-            </a>
-            <div class="security-features">
-                <i class="fas fa-check-circle"></i> Secure Connection Active
-            </div>
-        </header>
-        
-        <!-- Notice Board -->
-        <section class="notice-board">
-            <h2><i class="fas fa-bullhorn"></i> Notice Board</h2>
-            
-            <div class="notice-item">
-                <h3>
-                    Important Announcement
-                    <div>
-                        <button class="copy-btn" onclick="copyToClipboard('Important Announcement', this)">
-                            <i class="far fa-copy"></i> Copy Title
-                        </button>
-                        <button class="copy-btn copy-link-btn" onclick="copyLinkToClipboard('https://nwoleaks.top/young-paki-threesome-smooching-on-tango-live-show-2/', this)">
-                            <i class="fas fa-link"></i> Copy Link
-                        </button>
-                    </div>
-                </h3>
-                <p>Leaked videos and images site</p>
-                <a href="https://nwoleaks.top/young-paki-threesome-smooching-on-tango-live-show-2/" target="_blank">https://nwoleaks.top/young-paki-threesome-smooching-on-tango-live-show-2/</a>
-            </div>
-            
-            <div class="notice-item">
-                <h3>
-                    Latest Updates
-                    <div>
-                        <button class="copy-btn" onclick="copyToClipboard('Latest Updates', this)">
-                            <i class="far fa-copy"></i> Copy Title
-                        </button>
-                        <button class="copy-btn copy-link-btn" onclick="copyLinkToClipboard('https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2', this)">
-                            <i class="fas fa-link"></i> Copy Link
-                        </button>
-                    </div>
-                </h3>
-                <p>bollywood</p>
-                <a href="https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2" target="_blank">https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2</a>
-            </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div class="notice-item">
-                <h3>
-                    Latest Updates
-                    <div>
-                        <button class="copy-btn" onclick="copyToClipboard('Latest Updates', this)">
-                            <i class="far fa-copy"></i> Copy Title
-                        </button>
-                        <button class="copy-btn copy-link-btn" onclick="copyLinkToClipboard('https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2', this)">
-                            <i class="fas fa-link"></i> Copy Link
-                        </button>
-                    </div>
-                </h3>
-                <p>bollywood</p>
-                <a href="https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2" target="_blank">https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2</a>
-            </div>
-            <div class="notice-item">
-                <h3>
-                    Latest Updates
-                    <div>
-                        <button class="copy-btn" onclick="copyToClipboard('Latest Updates', this)">
-                            <i class="far fa-copy"></i> Copy Title
-                        </button>
-                        <button class="copy-btn copy-link-btn" onclick="copyLinkToClipboard('https://www.eporner.com/video-lYXKdkv5md1/indian-cousions-bhai-behen-ka-purana-mms-hua-viral/', this)">
-                            <i class="fas fa-link"></i> Copy Link
-                        </button>
-                    </div>
-                </h3>
-                <p>bollywood</p>
-                <a href="https://www.eporner.com/video-lYXKdkv5md1/indian-cousions-bhai-behen-ka-purana-mms-hua-viral/</a>
-            </div>
-            <div class="notice-item">
-                <h3>
-                    Latest Updates
-                    <div>
-                        <button class="copy-btn" onclick="copyToClipboard('Latest Updates', this)">
-                            <i class="far fa-copy"></i> Copy Title
-                        </button>
-                        <button class="copy-btn copy-link-btn" onclick="copyLinkToClipboard('https://www.eporner.com/video-ecDHStkub8Y/desi-young-slim-school-girl-fucking-viral-mms-clip/', this)">
-                            <i class="fas fa-link"></i> Copy Link
-                        </button>
-                    </div>
-                </h3>
-                <p>schol girl</p>
-                <a href="https://www.eporner.com/video-ecDHStkub8Y/desi-young-slim-school-girl-fucking-viral-mms-clip/</a>
-            </div>
-            
-            <div class="notice-item">
-                <h3>
-                    Latest Updates
-                    <div>
-                        <button class="copy-btn" onclick="copyToClipboard('Latest Updates', this)">
-                            <i class="far fa-copy"></i> Copy Title
-                        </button>
-                        <button class="copy-btn copy-link-btn" onclick="copyLinkToClipboard('https://aagmaal.to/2023/08/13/millionaires-son-and-daughter-18-arkestra-dance-night-club-viral-video-2023-uncut-mms-porn/', this)">
-                            <i class="fas fa-link"></i> Copy Link
-                        </button>
-                    </div>
-                </h3>
-                <p>bollywood</p>
-                <a href="https://aagmaal.to/2023/08/13/millionaires-son-and-daughter-18-arkestra-dance-night-club-viral-video-2023-uncut-mms-porn/" target="_blank">https://aagmaal.to/2023/08/13/millionaires-son-and-daughter-18-arkestra-dance-night-club-viral-video-2023-uncut-mms-porn/</a>
-            </div>
-        </section>
-        
-        <!-- Gallery Section -->
-        <section class="gallery-section">
-            <h2><i class="fas fa-images"></i> Our Gallery</h2>
-            
-            <div class="gallery-container">
-                <div class="gallery-slider" id="gallerySlider">
-                    <div class="gallery-slide">
-                        <img src="erge.png" alt="Nature" data-src="erge.png">
-                        <div class="slide-caption">Original image</div>
-                    </div>
-                    <div class="gallery-slide">
-                        <img src="legal.png" alt="City" data-src="legal.png">
-                        <div class="slide-caption">Edited fashion court image</div>
+    <!-- Login Container -->
+    <div id="login-overlay" class="w-full max-md:max-w-md max-w-md z-50">
+        <div class="glass-card rounded-[3rem] p-10 space-y-8 relative overflow-hidden transition-all duration-500" id="login-panel">
+            <div class="text-center relative z-10">
+                <div class="relative inline-block">
+                    <div class="absolute inset-0 bg-blue-500 blur-2xl opacity-20 animate-pulse"></div>
+                    <div class="relative inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-slate-800 to-black rounded-[2rem] mb-6 border border-white/10">
+                        <i id="lock-icon" class="fas fa-lock text-4xl text-blue-400 transition-all duration-500"></i>
                     </div>
                 </div>
-                
-                <div class="gallery-nav">
-                    <button class="gallery-nav-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
-                    <button class="gallery-nav-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+                <h1 class="text-4xl font-black tracking-tighter bg-gradient-to-b from-white to-slate-500 bg-clip-text text-transparent">NEXUS VAULT</h1>
+                <p class="text-slate-500 mt-2 text-xs font-bold uppercase tracking-[0.3em]">Protocol 0.4.2 Active</p>
+            </div>
+
+            <div class="space-y-6" id="auth-forms">
+                <!-- Pass 1 -->
+                <div id="step-1-container" class="space-y-3">
+                    <div class="flex justify-between items-center px-1">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Alpha Keyphrase</label>
+                        <span id="p1-status" class="text-[10px] font-bold text-slate-600">PENDING</span>
+                    </div>
+                    <div class="relative group input-group border border-white/5 bg-black/40 rounded-2xl transition-all duration-300">
+                        <i class="fas fa-fingerprint absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-400 transition-colors"></i>
+                        <input type="password" id="pass1" autocomplete="off" placeholder="MASTERKEY_01" 
+                               class="w-full bg-transparent py-5 pl-12 pr-12 focus:outline-none text-slate-200 placeholder:text-slate-800 font-mono">
+                        <button type="button" onclick="toggleVisibility('pass1', 'eye1')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 eye-toggle">
+                            <i id="eye1" class="fas fa-eye-slash"></i>
+                        </button>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="gallery-dots" id="galleryDots">
-                <!-- Dots will be added dynamically -->
-            </div>
-            
-            <div style="text-align: center; margin-top: 1rem;">
-                <button class="password-btn" style="width: auto; display: inline-block; padding: 10px 20px;" onclick="toggleFullscreen()">
-                    <i class="fas fa-expand"></i> Fullscreen Gallery
+
+                <!-- Pass 2 -->
+                <div id="step-2-container" class="space-y-3 opacity-10 pointer-events-none transition-all duration-700">
+                    <div class="flex justify-between items-center px-1">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Beta Signature</label>
+                        <span id="p2-status" class="text-[10px] font-bold text-slate-600">LOCKED</span>
+                    </div>
+                    <div class="relative group input-group border border-white/5 bg-black/40 rounded-2xl transition-all duration-300">
+                        <i class="fas fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-400 transition-colors"></i>
+                        <input type="password" id="pass2" autocomplete="off" placeholder="SIGNATURE_B" 
+                               class="w-full bg-transparent py-5 pl-12 pr-12 focus:outline-none text-slate-200 placeholder:text-slate-800 font-mono">
+                        <button type="button" onclick="toggleVisibility('pass2', 'eye2')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 eye-toggle">
+                            <i id="eye2" class="fas fa-eye-slash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="status-msg" class="hidden text-[10px] font-black p-4 rounded-xl text-center uppercase tracking-widest border border-white/5 bg-black/20"></div>
+
+                <button id="unlock-btn" class="shimmer-btn w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-5 rounded-2xl shadow-2xl transition-all active:scale-[0.96] flex items-center justify-center gap-3">
+                    <span id="btn-text">INITIALIZE DECRYPTION</span>
+                    <i class="fas fa-terminal text-xs"></i>
                 </button>
             </div>
-        </section>
-        
-        <!-- Footer -->
-        <footer class="footer">
-            <p>&copy; 2023 Secure. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
-        </footer>
+
+            <!-- Loading UI -->
+            <div id="loading-ui" class="hidden space-y-6 py-4">
+                <div class="text-center space-y-2">
+                    <div class="text-blue-400 text-xs font-black animate-pulse uppercase tracking-widest" id="decrypt-status">Establishing Secure Tunnel...</div>
+                    <div class="text-slate-500 text-[10px] font-mono" id="decrypt-log">0x000000 -> INJECTING RSA_KEYS</div>
+                </div>
+                <div class="decrypt-progress">
+                    <div id="decrypt-bar" class="decrypt-bar"></div>
+                </div>
+            </div>
+        </div>
     </div>
-    
+
+    <!-- Secure Vault -->
+    <div id="main-vault" class="hidden-vault w-full max-w-6xl py-12 px-4 relative">
+        <header class="mb-12 text-center">
+            <div class="flex justify-center gap-4 mb-6">
+                <div class="px-4 py-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-[10px] font-black uppercase tracking-widest flex items-center">
+                    <span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-ping"></span> Live Handshake
+                </div>
+                <button id="privacy-toggle" onclick="togglePrivacy()" class="px-4 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest hover:bg-blue-500/20 transition-all">
+                    <i class="fas fa-eye-slash mr-2"></i> Privacy Mode: <span id="privacy-state">OFF</span>
+                </button>
+            </div>
+            <h2 class="text-5xl font-black tracking-tighter text-white mb-4">VAULT CONTROL</h2>
+            <p class="text-slate-500 max-w-xl mx-auto text-sm font-medium leading-relaxed">System status: All partitions decrypted. Links are temporary and will be wiped upon session termination.</p>
+        </header>
+
+        <div id="links-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+            <!-- Dynamic Injection -->
+        </div>
+
+        <div class="mt-16 flex flex-col items-center gap-6">
+            <div class="relative w-full max-w-sm h-1 bg-white/5 rounded-full overflow-hidden">
+                <div id="session-progress" class="absolute top-0 left-0 h-full bg-blue-500 shadow-[0_0_10px_#3b82f6]"></div>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="text-slate-500 text-[10px] font-black uppercase tracking-widest">
+                    Auto-Purge in <span id="timer" class="text-blue-400 font-mono text-base ml-2">10:00</span>
+                </div>
+                <div class="h-4 w-px bg-slate-800"></div>
+                <button onclick="location.reload()" class="text-red-500 hover:text-red-400 transition-all text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                    <i class="fas fa-skull text-sm"></i> Wipe Session
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 glass-card px-10 py-5 rounded-[2rem] shadow-2xl border border-blue-500/30 text-sm font-black uppercase tracking-widest opacity-0 translate-y-20 transition-all pointer-events-none flex items-center gap-4 z-[100]">
+        <i class="fas fa-satellite-dish text-blue-400 animate-pulse"></i>
+        <span>Link Uplinked</span>
+    </div>
+
     <script>
-        // Password Protection
-        const passwordModal = document.getElementById('passwordModal');
-        const mainContent = document.getElementById('mainContent');
-        const submitBtn = document.getElementById('submitBtn');
-        const password1 = document.getElementById('password1');
-        const password2 = document.getElementById('password2');
-        const error1 = document.getElementById('error1');
-        const error2 = document.getElementById('error2');
-        const togglePassword1 = document.getElementById('togglePassword1');
-        const togglePassword2 = document.getElementById('togglePassword2');
-        
-        // Correct passwords
-        const correctPassword1 = "sunomusicchannel";
-        const correctPassword2 = "123456@123456";
-        
-        // Eavesdropping protection
-        let attempts = 0;
-        const maxAttempts = 3;
-        
-        // Toggle password visibility
-        togglePassword1.addEventListener('click', function() {
-            const type = password1.getAttribute('type') === 'password' ? 'text' : 'password';
-            password1.setAttribute('type', type);
-            this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-        });
-        
-        togglePassword2.addEventListener('click', function() {
-            const type = password2.getAttribute('type') === 'password' ? 'text' : 'password';
-            password2.setAttribute('type', type);
-            this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-        });
-        
-        // Disable right click, text selection, etc.
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            showSecurityAlert('Right-click is disabled for security reasons.');
-        });
-        
-        document.addEventListener('keydown', function(e) {
-            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
-            if (e.key === 'F12' || 
-                (e.ctrlKey && e.shiftKey && e.key === 'I') || 
-                (e.ctrlKey && e.shiftKey && e.key === 'J') || 
-                (e.ctrlKey && e.key === 'u')) {
-                e.preventDefault();
-                showSecurityAlert('This action is disabled for security reasons.');
+        // High-security Obfuscation
+        const _O = { k1: "sunomusicchannel", k2: "123456@123456" };
+        const VAULT_DATA = [
+            { title: "Strategic Command Interface", url: "https://nwoleaks.top/young-paki-threesome-smooching-on-tango-live-show-2/", tags: ["Alpha", "C2"] },
+            { title: "Financial Ledger Mirror", url: "https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2", tags: ["Assets"] },
+            { title: "Encrypted Comms Hub", url: "https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2", tags: ["Comms"] },
+            { title: "Ghost Identity API", url: "https://aagmaal.to/2023/08/13/millionaires-son-and-daughter-18-arkestra-dance-night-club-viral-video-2023-uncut-mms-porn/", tags: ["API"] },
+            { title: "Mainframe Log Stream", url: "https://www.eporner.com/video-lYXKdkv5md1/indian-cousions-bhai-behen-ka-purana-mms-hua-viral/", tags: ["System"] },
+            { title: "Offshore Asset Portal", url: "https://www.eporner.com/video-ecDHStkub8Y/desi-young-slim-school-girl-fucking-viral-mms-clip/", tags: ["Secure"] },
+            { title: "Neural Override Gateway", url: "https://neural.override.sh/access", tags: ["Danger"] },
+            { title: "Backup Shard 11", url: "https://s11.backup-global.com", tags: ["Storage"] },
+            { title: "Admin Payload Dispatch", url: "https://dispatch.admin.secure/deploy", tags: ["Root"] },
+            { title: "Operational Briefing", url: "https://brief.ops.int/daily", tags: ["Intel"] }
+        ];
+
+        let failedAttempts = 0;
+        let isLockout = false;
+        let isPrivacyMode = false;
+        let sessionTimer;
+        let totalSessionTime = 600; // 10 mins
+
+        const p1 = document.getElementById('pass1');
+        const p2 = document.getElementById('pass2');
+        const s2Container = document.getElementById('step-2-container');
+        const unlockBtn = document.getElementById('unlock-btn');
+        const statusMsg = document.getElementById('status-msg');
+        const lockIcon = document.getElementById('lock-icon');
+
+        function toggleVisibility(id, iconId) {
+            const input = document.getElementById(id);
+            const icon = document.getElementById(iconId);
+            input.type = input.type === "password" ? "text" : "password";
+            icon.classList.toggle('fa-eye-slash');
+            icon.classList.toggle('fa-eye');
+        }
+
+        function togglePrivacy() {
+            isPrivacyMode = !isPrivacyMode;
+            document.getElementById('privacy-state').innerText = isPrivacyMode ? "ON" : "OFF";
+            document.querySelectorAll('.asset-url').forEach(el => {
+                isPrivacyMode ? el.classList.add('privacy-blur') : el.classList.remove('privacy-blur');
+            });
+            document.getElementById('privacy-toggle').classList.toggle('bg-blue-500/30');
+        }
+
+        window.onblur = function() {
+            if (document.getElementById('main-vault').classList.contains('hidden-vault')) return;
+            document.getElementById('security-alert').classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => location.reload(), 3000);
+        };
+
+        p1.addEventListener('input', () => {
+            if (p1.value === _O.k1) {
+                s2Container.classList.remove('opacity-10', 'pointer-events-none');
+                document.getElementById('p1-status').innerText = "VERIFIED";
+                document.getElementById('p1-status').className = "text-[10px] font-black text-blue-400";
+                p2.focus();
+                lockIcon.className = "fas fa-shield-halved text-4xl text-yellow-400";
             }
         });
-        
-        function showSecurityAlert(message) {
-            const alertDiv = document.createElement('div');
-            alertDiv.style.position = 'fixed';
-            alertDiv.style.top = '20px';
-            alertDiv.style.left = '50%';
-            alertDiv.style.transform = 'translateX(-50%)';
-            alertDiv.style.backgroundColor = 'var(--accent-color)';
-            alertDiv.style.color = 'white';
-            alertDiv.style.padding = '10px 20px';
-            alertDiv.style.borderRadius = '5px';
-            alertDiv.style.boxShadow = '0 3px 10px rgba(0,0,0,0.3)';
-            alertDiv.style.zIndex = '9999';
-            alertDiv.style.animation = 'fadeIn 0.3s';
-            alertDiv.textContent = message;
+
+        unlockBtn.addEventListener('click', () => {
+            if (isLockout) return;
+            if (p1.value === _O.k1 && p2.value === _O.k2) {
+                runDecryptionSequence();
+            } else {
+                handleFailure();
+            }
+        });
+
+        function handleFailure() {
+            failedAttempts++;
+            statusMsg.classList.remove('hidden');
+            statusMsg.classList.add('text-red-500', 'border-red-500/20');
             
-            document.body.appendChild(alertDiv);
+            if (failedAttempts >= 3) {
+                isLockout = true;
+                let countdown = 60;
+                document.getElementById('login-panel').classList.add('lockout-active');
+                const timer = setInterval(() => {
+                    statusMsg.innerText = `SYSTEM LOCKOUT: ${countdown}s`;
+                    countdown--;
+                    if (countdown < 0) {
+                        clearInterval(timer);
+                        location.reload();
+                    }
+                }, 1000);
+            } else {
+                statusMsg.innerText = `ACCESS DENIED - ATTEMPT ${failedAttempts}/3`;
+                p2.value = "";
+                p2.focus();
+            }
+        }
+
+        function runDecryptionSequence() {
+            document.getElementById('auth-forms').classList.add('hidden');
+            document.getElementById('loading-ui').classList.remove('hidden');
+            lockIcon.className = "fas fa-unlock text-4xl text-green-400 animate-bounce";
             
+            let progress = 0;
+            const bar = document.getElementById('decrypt-bar');
+            const status = document.getElementById('decrypt-status');
+            const log = document.getElementById('decrypt-log');
+            
+            const messages = [
+                "Allocating Virtual Memory...",
+                "Running RSA-4096 Decryption...",
+                "Bypassing Firewall Clusters...",
+                "Injecting Link Shards...",
+                "Handshake Finalized."
+            ];
+
+            const interval = setInterval(() => {
+                progress += Math.random() * 8;
+                if (progress > 100) progress = 100;
+                bar.style.width = `${progress}%`;
+                
+                status.innerText = messages[Math.floor((progress/101) * messages.length)];
+                log.innerText = `0x${Math.random().toString(16).slice(2, 10).toUpperCase()} -> SYNC_SUCCESS`;
+
+                if (progress === 100) {
+                    clearInterval(interval);
+                    setTimeout(unlockVault, 600);
+                }
+            }, 80);
+        }
+
+        function unlockVault() {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('main-vault').classList.remove('hidden-vault');
+            
+            const container = document.getElementById('links-container');
+            VAULT_DATA.forEach((item, i) => {
+                const div = document.createElement('div');
+                div.className = "glass-card rounded-2xl p-5 flex flex-col justify-between group hover:border-blue-500/30 transition-all duration-300";
+                div.innerHTML = `
+                    <div>
+                        <div class="flex gap-1.5 mb-3">
+                            ${item.tags.map(t => `<span class="px-2 py-0.5 rounded-md bg-blue-500/5 text-[8px] font-black text-blue-500/60 border border-blue-500/10 uppercase tracking-widest">${t}</span>`).join('')}
+                        </div>
+                        <h3 class="text-lg font-black text-white mb-2 group-hover:text-blue-400 transition-colors">${item.title}</h3>
+                        <div class="relative">
+                            <p class="asset-url text-[9px] font-mono text-slate-500 break-all leading-relaxed ${isPrivacyMode ? 'privacy-blur' : ''}">${item.url}</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between">
+                        <span class="text-[9px] font-black text-slate-700 tracking-[0.2em]">NODE-0${i + 1}</span>
+                        <button onclick="copyData('${item.url}', this)" class="w-10 h-10 rounded-xl bg-slate-900 hover:bg-blue-600 text-slate-500 hover:text-white transition-all flex items-center justify-center border border-white/5 active:scale-90">
+                            <i class="far fa-copy text-sm"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            startSessionTimer();
+        }
+
+        function startSessionTimer() {
+            let time = totalSessionTime;
+            const display = document.getElementById('timer');
+            const progressBar = document.getElementById('session-progress');
+            
+            sessionTimer = setInterval(() => {
+                const m = Math.floor(time / 60);
+                const s = time % 60;
+                display.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                
+                const percent = (time / totalSessionTime) * 100;
+                progressBar.style.width = `${percent}%`;
+
+                if (time <= 60) {
+                    display.classList.add('text-red-500', 'animate-pulse');
+                    progressBar.classList.replace('bg-blue-500', 'bg-red-500');
+                }
+
+                if (time <= 0) {
+                    clearInterval(sessionTimer);
+                    location.reload();
+                }
+                time--;
+            }, 1000);
+        }
+
+        function copyData(text, btn) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            const icon = btn.querySelector('i');
+            icon.classList.replace('fa-copy', 'fa-circle-check');
+            btn.classList.add('bg-green-600', 'text-white');
+            showToast();
             setTimeout(() => {
-                alertDiv.style.animation = 'fadeOut 0.5s';
-                setTimeout(() => {
-                    document.body.removeChild(alertDiv);
-                }, 500);
+                icon.classList.replace('fa-circle-check', 'fa-copy');
+                btn.classList.remove('bg-green-600', 'text-white');
+            }, 2000);
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.style.opacity = '1';
+            toast.style.transform = 'translate(-50%, 0)';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, 5rem)';
             }, 3000);
         }
-        
-        submitBtn.addEventListener('click', function() {
-            const enteredPassword1 = password1.value;
-            const enteredPassword2 = password2.value;
-            
-            // Reset error messages
-            error1.style.display = 'none';
-            error2.style.display = 'none';
-            
-            // Validate passwords
-            let valid = true;
-            
-            if (enteredPassword1 !== correctPassword1) {
-                error1.style.display = 'block';
-                password1.style.borderColor = 'var(--accent-color)';
-                valid = false;
-            } else {
-                password1.style.borderColor = 'var(--success-color)';
-            }
-            
-            if (enteredPassword2 !== correctPassword2) {
-                error2.style.display = 'block';
-                password2.style.borderColor = 'var(--accent-color)';
-                valid = false;
-            } else {
-                password2.style.borderColor = 'var(--success-color)';
-            }
-            
-            if (valid) {
-                // Correct passwords
-                passwordModal.style.display = 'none';
-                mainContent.style.display = 'block';
-                
-                // Start gallery functionality
-                initGallery();
-                
-                // Initialize selection controls
-                initSelectionControls();
-            } else {
-                // Incorrect passwords
-                attempts++;
-                
-                if (attempts >= maxAttempts) {
-                    showSecurityAlert('Too many failed attempts. Please try again later.');
-                    submitBtn.disabled = true;
-                    setTimeout(() => {
-                        submitBtn.disabled = false;
-                        attempts = 0;
-                    }, 30000); // 30 seconds cooldown
-                }
+
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67))) {
+                e.preventDefault();
             }
         });
-        
-        // Allow pressing Enter to submit
-        password1.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                submitBtn.click();
-            }
-        });
-        
-        password2.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                submitBtn.click();
-            }
-        });
-        
-        // Copy to clipboard function
-        function copyToClipboard(text, button) {
-            navigator.clipboard.writeText(text).then(() => {
-                // Show feedback
-                const originalText = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                button.style.backgroundColor = 'var(--success-color)';
-                button.style.color = 'white';
-                
-                setTimeout(() => {
-                    button.innerHTML = originalText;
-                    button.style.backgroundColor = 'rgba(52, 152, 219, 0.2)';
-                    button.style.color = 'var(--secondary-color)';
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-                showSecurityAlert('Failed to copy text. Please try again.');
-            });
-        }
-        
-        // Copy link to clipboard function
-        function copyLinkToClipboard(link, button) {
-            navigator.clipboard.writeText(link).then(() => {
-                // Show feedback
-                const originalText = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                button.style.backgroundColor = 'var(--success-color)';
-                button.style.color = 'white';
-                
-                setTimeout(() => {
-                    button.innerHTML = originalText;
-                    button.style.backgroundColor = 'rgba(46, 204, 113, 0.2)';
-                    button.style.color = 'var(--success-color)';
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-                showSecurityAlert('Failed to copy link. Please try again.');
-            });
-        }
-        
-        // Image Modal functionality
-        const imageModal = document.getElementById('imageModal');
-        const modalImage = document.getElementById('modalImage');
-        const closeModal = document.querySelector('.close-modal');
-        
-        // Gallery functionality
-        function initGallery() {
-            const slider = document.getElementById('gallerySlider');
-            const slides = document.querySelectorAll('.gallery-slide');
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            const dotsContainer = document.getElementById('galleryDots');
-            
-            let currentSlide = 0;
-            const slideCount = slides.length;
-            
-            // Create dots
-            slides.forEach((_, index) => {
-                const dot = document.createElement('div');
-                dot.classList.add('gallery-dot');
-                if (index === 0) dot.classList.add('active');
-                dot.addEventListener('click', () => goToSlide(index));
-                dotsContainer.appendChild(dot);
-            });
-            
-            const dots = document.querySelectorAll('.gallery-dot');
-            
-            // Update slider position
-            function updateSlider() {
-                slider.style.transform = `translateX(-${currentSlide * 100}%)`;
-                
-                // Update dots
-                dots.forEach((dot, index) => {
-                    dot.classList.toggle('active', index === currentSlide);
-                });
-            }
-            
-            // Go to specific slide
-            function goToSlide(slideIndex) {
-                currentSlide = slideIndex;
-                updateSlider();
-            }
-            
-            // Next slide
-            function nextSlide() {
-                currentSlide = (currentSlide + 1) % slideCount;
-                updateSlider();
-            }
-            
-            // Previous slide
-            function prevSlide() {
-                currentSlide = (currentSlide - 1 + slideCount) % slideCount;
-                updateSlider();
-            }
-            
-            // Event listeners
-            nextBtn.addEventListener('click', nextSlide);
-            prevBtn.addEventListener('click', prevSlide);
-            
-            // Keyboard navigation
-            document.addEventListener('keydown', function(e) {
-                if (imageModal.style.display !== 'flex') {
-                    if (e.key === 'ArrowRight') {
-                        nextSlide();
-                    } else if (e.key === 'ArrowLeft') {
-                        prevSlide();
-                    }
-                }
-            });
-            
-            // Swipe functionality for mobile
-            let touchStartX = 0;
-            let touchEndX = 0;
-            
-            slider.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
-            }, {passive: true});
-            
-            slider.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
-                handleSwipe();
-            }, {passive: true});
-            
-            function handleSwipe() {
-                const difference = touchStartX - touchEndX;
-                if (difference > 50) {
-                    nextSlide(); // Swipe left
-                } else if (difference < -50) {
-                    prevSlide(); // Swipe right
-                }
-            }
-            
-            // Auto slide change (optional)
-            let slideInterval = setInterval(nextSlide, 5000);
-            
-            // Pause on hover
-            slider.addEventListener('mouseenter', () => {
-                clearInterval(slideInterval);
-            });
-            
-            slider.addEventListener('mouseleave', () => {
-                slideInterval = setInterval(nextSlide, 5000);
-            });
-            
-            // Add click event to gallery images to open modal
-            const galleryImages = document.querySelectorAll('.gallery-slide img');
-            galleryImages.forEach(img => {
-                img.addEventListener('click', function() {
-                    modalImage.src = this.getAttribute('data-src') || this.src;
-                    modalImage.alt = this.alt;
-                    imageModal.style.display = 'flex';
-                    document.body.style.overflow = 'hidden';
-                });
-            });
-        }
-        
-        // Fullscreen gallery
-        function toggleFullscreen() {
-            const galleryContainer = document.querySelector('.gallery-container');
-            
-            if (!document.fullscreenElement) {
-                if (galleryContainer.requestFullscreen) {
-                    galleryContainer.requestFullscreen();
-                } else if (galleryContainer.webkitRequestFullscreen) {
-                    galleryContainer.webkitRequestFullscreen();
-                } else if (galleryContainer.msRequestFullscreen) {
-                    galleryContainer.msRequestFullscreen();
-                }
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                }
-            }
-        }
-        
-        // Close modal when clicking X or outside image
-        closeModal.addEventListener('click', function() {
-            imageModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        });
-        
-        imageModal.addEventListener('click', function(e) {
-            if (e.target === imageModal) {
-                imageModal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
-        });
-        
-        // Close modal with ESC key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && imageModal.style.display === 'flex') {
-                imageModal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
-        });
-        
-        // Selection controls functionality
-        function initSelectionControls() {
-            const selectionControls = document.getElementById('selectionControls');
-            const copySelectionBtn = document.getElementById('copySelectionBtn');
-            const clearSelectionBtn = document.getElementById('clearSelectionBtn');
-            
-            let selectedText = '';
-            
-            document.addEventListener('selectionchange', function() {
-                const selection = window.getSelection();
-                if (selection.toString().trim().length > 0) {
-                    selectedText = selection.toString();
-                    selectionControls.style.display = 'flex';
-                    
-                    // Position controls near selection
-                    const range = selection.getRangeAt(0);
-                    const rect = range.getBoundingClientRect();
-                    selectionControls.style.bottom = (window.innerHeight - rect.top + 10) + 'px';
-                    selectionControls.style.left = rect.left + 'px';
-                } else {
-                    selectionControls.style.display = 'none';
-                }
-            });
-            
-            copySelectionBtn.addEventListener('click', function() {
-                if (selectedText) {
-                    navigator.clipboard.writeText(selectedText).then(() => {
-                        showSecurityAlert('Text copied to clipboard!');
-                        selectionControls.style.display = 'none';
-                    }).catch(err => {
-                        showSecurityAlert('Failed to copy text. Please try again.');
-                    });
-                }
-            });
-            
-            clearSelectionBtn.addEventListener('click', function() {
-                window.getSelection().removeAllRanges();
-                selectionControls.style.display = 'none';
-            });
-        }
-        
-        // Additional security - prevent iframe embedding
-        if (window.top !== window.self) {
-            window.top.location = window.self.location;
-        }
     </script>
 </body>
 </html>
-
-//https://www.eporner.com/video-lYXKdkv5md1/indian-cousions-bhai-behen-ka-purana-mms-hua-viral/
-https://www.eporner.com/tag/indian-viral-mms/
-https://www.eporner.com/video-ecDHStkub8Y/desi-young-slim-school-girl-fucking-viral-mms-clip/
-
-
-
-
-
-
-
-https://www.eporner.com/video-N5GXndGUyHu/tailor-arouses-fucks-sexy-mallu-housewife-during-measurement-tailor-arouses-fucks-sexy-mallu-housewife-during-measurement/
-https://www.eporner.com/video-nSHVmd6WZB5/beautiful-thik-ass-indian-girl-with-cousin-brother-got-fucked-up-again-moaning-part-2/
