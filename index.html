@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Access Vault v4.0</title>
+    <title>Nexus Vault v4.1 - Secure Access</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -125,7 +125,7 @@
     <div class="bg-mesh"></div>
     <div class="scanline"></div>
 
-    <!-- Privacy Overlay (Active when tab is blurred) -->
+    <!-- Privacy Overlay -->
     <div id="privacy-overlay" class="fixed inset-0 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500">
         <div class="text-center space-y-4">
             <div class="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto border border-blue-500/20">
@@ -136,7 +136,7 @@
         </div>
     </div>
 
-    <!-- Login Container -->
+    <!-- Login/Setup Container -->
     <div id="login-overlay" class="w-full max-w-md z-50">
         <div class="glass-card rounded-[2.5rem] p-10 space-y-8 relative overflow-hidden step-transition" id="login-panel">
             <div class="text-center relative z-10">
@@ -146,16 +146,16 @@
                         <i id="lock-icon" class="fas fa-lock text-3xl text-blue-400 transition-all duration-700"></i>
                     </div>
                 </div>
-                <h1 class="text-4xl font-black tracking-tighter bg-gradient-to-b from-white to-slate-400 bg-clip-text text-transparent">NEXUS VAULT</h1>
-                <p class="text-slate-500 mt-2 text-[10px] font-black uppercase tracking-[0.4em]">Secure Handshake v4.0</p>
+                <h1 id="vault-title" class="text-4xl font-black tracking-tighter bg-gradient-to-b from-white to-slate-400 bg-clip-text text-transparent uppercase">Nexus Vault</h1>
+                <p id="vault-subtitle" class="text-slate-500 mt-2 text-[10px] font-black uppercase tracking-[0.4em]">Secure Handshake v4.1</p>
             </div>
 
             <div class="space-y-6" id="auth-forms">
                 <!-- Pass 1 -->
                 <div id="step-1-container" class="space-y-3">
                     <div class="flex justify-between items-center px-1">
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Alpha Keyphrase</label>
-                        <span id="p1-status" class="text-[10px] font-bold text-slate-600">WAITING</span>
+                        <label id="p1-label" class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Alpha Keyphrase</label>
+                        <span id="p1-status" class="text-[10px] font-bold text-slate-600 tracking-widest">WAITING</span>
                     </div>
                     <div class="relative group input-group border border-white/5 bg-black/40 rounded-2xl transition-all duration-300">
                         <i class="fas fa-fingerprint absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-400 transition-colors"></i>
@@ -170,8 +170,8 @@
                 <!-- Pass 2 -->
                 <div id="step-2-container" class="space-y-3 opacity-20 pointer-events-none step-transition">
                     <div class="flex justify-between items-center px-1">
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Beta Signature</label>
-                        <span id="p2-status" class="text-[10px] font-bold text-slate-600">LOCKED</span>
+                        <label id="p2-label" class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Beta Signature</label>
+                        <span id="p2-status" class="text-[10px] font-bold text-slate-600 tracking-widest">LOCKED</span>
                     </div>
                     <div class="relative group input-group border border-white/5 bg-black/40 rounded-2xl transition-all duration-300">
                         <i class="fas fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-400 transition-colors"></i>
@@ -185,7 +185,7 @@
 
                 <div id="status-msg" class="hidden text-[10px] font-black p-4 rounded-xl text-center uppercase tracking-widest border border-white/5 bg-black/30"></div>
 
-                <button id="unlock-btn" class="shimmer-btn w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-3">
+                <button id="unlock-btn" class="shimmer-btn w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-3 uppercase tracking-widest">
                     <span id="btn-text">INITIALIZE DECRYPTION</span>
                     <i class="fas fa-terminal text-xs"></i>
                 </button>
@@ -209,18 +209,21 @@
         <header class="mb-12 text-center space-y-6">
             <div class="flex flex-wrap justify-center gap-3">
                 <div class="px-4 py-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-[10px] font-black uppercase tracking-widest flex items-center">
-                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-2 animate-pulse"></span> Encrypted Handshake
+                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-2 animate-pulse"></span> Encrypted Session
                 </div>
                 <button id="privacy-toggle" onclick="togglePrivacy()" class="px-4 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest hover:bg-blue-500/20 transition-all flex items-center">
                     <i id="privacy-icon" class="fas fa-eye-slash mr-2"></i> Privacy Mode: <span id="privacy-state" class="ml-1">OFF</span>
                 </button>
+                <button onclick="resetVault()" class="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all">
+                    <i class="fas fa-sync-alt mr-2"></i> Reset Keys
+                </button>
             </div>
             <h2 class="text-5xl font-black tracking-tighter text-white">CENTRAL COMMAND</h2>
-            <p class="text-slate-500 max-w-xl mx-auto text-xs font-bold uppercase tracking-widest">Protocol 0.4.2 Active • Sub-layers decrypted</p>
+            <p class="text-slate-500 max-w-xl mx-auto text-xs font-bold uppercase tracking-widest">Protocol 0.4.2 Active • Neural Link Decrypted</p>
         </header>
 
         <div id="links-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5">
-            <!-- Dynamic Injection happens here for security -->
+            <!-- Dynamic Injection -->
         </div>
 
         <div class="mt-20 flex flex-col items-center gap-8">
@@ -246,27 +249,15 @@
     <!-- Notification Toast -->
     <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 glass-card px-8 py-4 rounded-3xl shadow-2xl border border-blue-500/20 text-xs font-black uppercase tracking-widest opacity-0 translate-y-20 transition-all duration-500 pointer-events-none flex items-center gap-3 z-[100]">
         <i class="fas fa-check-circle text-blue-400"></i>
-        <span>Link copied to buffer</span>
+        <span id="toast-text">Link copied to buffer</span>
     </div>
 
     <script>
-        // High-security Obfuscation
-        const _O = { k1: "sunomusicchannel", k2: "123456@123456" };
-        
-        // Data is not rendered in HTML to prevent DevTools inspection until authorized
-        const RAW_VAULT = [
-            { title: "Strategic Command Interface", url: "https://nwoleaks.top/young-paki-threesome-smooching-on-tango-live-show-2/", tags: ["Alpha", "C2"] },
-            { title: "Financial Ledger Mirror", url: "https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2", tags: ["Assets"] },
-            { title: "Encrypted Comms Hub", url: "https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2", tags: ["Comms"] },
-            { title: "Ghost Identity API", url: "https://aagmaal.to/2023/08/13/millionaires-son-and-daughter-18-arkestra-dance-night-club-viral-video-2023-uncut-mms-porn/", tags: ["API"] },
-            { title: "Mainframe Log Stream", url: "https://www.eporner.com/video-lYXKdkv5md1/indian-cousions-bhai-behen-ka-purana-mms-hua-viral/", tags: ["System"] },
-            { title: "Offshore Asset Portal", url: "https://www.eporner.com/video-ecDHStkub8Y/desi-young-slim-school-girl-fucking-viral-mms-clip/", tags: ["Secure"] },
-            { title: "Neural Override Gateway", url: " { title: "Operational Briefing", url: "https://brief.ops.int/daily", tags: ["Intel"] }", tags: ["Danger"] },
-            { title: "jasalmer old man", url: " https://www.eporner.com/video-stHsHU2V5Ov/jaisalmer-rajasthan-completely-naked-girl-with-old-man-viral-full-video/", tags: ["Storage"] },
-            { title: "Admin Payload Dispatch", url: "https://dispatch.admin.secure/deploy", tags: ["Root"] },
-            { title: "Operational Briefing", url: "https://brief.ops.int/daily", tags: ["Intel"] }
-        ];
+        // High-security Obfuscated Storage Keys
+        const STORAGE_KEY_ALPHA = "nx_vault_a";
+        const STORAGE_KEY_BETA = "nx_vault_b";
 
+        let isSetupMode = false;
         let failedAttempts = 0;
         let isLockout = false;
         let isPrivacyMode = false;
@@ -280,8 +271,55 @@
         const unlockBtn = document.getElementById('unlock-btn');
         const statusMsg = document.getElementById('status-msg');
         const lockIcon = document.getElementById('lock-icon');
+        const vaultTitle = document.getElementById('vault-title');
+        const vaultSubtitle = document.getElementById('vault-subtitle');
+        const btnText = document.getElementById('btn-text');
 
-        // Privacy Overlay Logic
+        // Vault Contents
+        const RAW_VAULT = [
+            { title: "Strategic Command Interface", url: "https://nwoleaks.top/young-paki-threesome-smooching-on-tango-live-show-2/", tags: ["Alpha", "C2"] },
+            { title: "Financial Ledger Mirror", url: "https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2", tags: ["Assets"] },
+            { title: "Encrypted Comms Hub", url: "https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2", tags: ["Comms"] },
+            { title: "Ghost Identity API", url: "https://aagmaal.to/2023/08/13/millionaires-son-and-daughter-18-arkestra-dance-night-club-viral-video-2023-uncut-mms-porn/", tags: ["API"] },
+            { title: "Mainframe Log Stream", url: "https://www.eporner.com/video-lYXKdkv5md1/indian-cousions-bhai-behen-ka-purana-mms-hua-viral/", tags: ["System"] },
+            { title: "Offshore Asset Portal", url: "https://www.eporner.com/video-ecDHStkub8Y/desi-young-slim-school-girl-fucking-viral-mms-clip/", tags: ["Secure"] },
+            { title: "Neural Override Gateway", url: "https://brief.ops.int/daily", tags: ["Danger"] },
+            { title: "Jaisalmer Heritage Log", url: "https://www.eporner.com/video-stHsHU2V5Ov/jaisalmer-rajasthan-completely-naked-girl-with-old-man-viral-full-video/", tags: ["Storage"] },
+            { title: "Admin Payload Dispatch", url: "https://dispatch.admin.secure/deploy", tags: ["Root"] },
+            { title: "Operational Briefing", url: "https://brief.ops.int/daily", tags: ["Intel"] }
+        ];
+
+        // Check if passwords exist
+        window.onload = function() {
+            const storedAlpha = localStorage.getItem(STORAGE_KEY_ALPHA);
+            const storedBeta = localStorage.getItem(STORAGE_KEY_BETA);
+
+            if (!storedAlpha || !storedBeta) {
+                initSetupMode();
+            }
+        };
+
+        function initSetupMode() {
+            isSetupMode = true;
+            vaultTitle.innerText = "Setup Vault";
+            vaultSubtitle.innerText = "Initialize Your Security Protocol";
+            document.getElementById('p1-label').innerText = "Set Alpha Keyphrase";
+            document.getElementById('p2-label').innerText = "Set Beta Signature";
+            btnText.innerText = "SECURE VAULT";
+            lockIcon.className = "fas fa-user-plus text-3xl text-blue-400";
+            s2Container.classList.remove('opacity-20', 'pointer-events-none');
+            p1.placeholder = "Enter Pass 1";
+            p2.placeholder = "Enter Pass 2";
+        }
+
+        function resetVault() {
+            if (confirm("DANGER: This will wipe your access keys and reset the vault. Continue?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // Privacy Logic
         window.addEventListener('blur', () => {
             if (isAuthorized) {
                 document.getElementById('privacy-overlay').style.opacity = '1';
@@ -310,19 +348,19 @@
             isPrivacyMode = !isPrivacyMode;
             const stateText = document.getElementById('privacy-state');
             const icon = document.getElementById('privacy-icon');
-            
             stateText.innerText = isPrivacyMode ? "ON" : "OFF";
             icon.className = isPrivacyMode ? "fas fa-eye text-blue-400 mr-2" : "fas fa-eye-slash text-blue-400 mr-2";
-            
             document.querySelectorAll('.asset-url').forEach(el => {
                 isPrivacyMode ? el.classList.add('blur-sm') : el.classList.remove('blur-sm');
             });
             document.getElementById('privacy-toggle').classList.toggle('bg-blue-500/30');
         }
 
-        // Auto-advance Logic
+        // Handle auto-advance for LOGIN mode
         p1.addEventListener('input', () => {
-            if (p1.value === _O.k1) {
+            if (isSetupMode) return;
+            const storedAlpha = localStorage.getItem(STORAGE_KEY_ALPHA);
+            if (p1.value === storedAlpha) {
                 s2Container.classList.remove('opacity-20', 'pointer-events-none');
                 document.getElementById('p1-status').innerText = "VERIFIED";
                 document.getElementById('p1-status').className = "text-[10px] font-black text-blue-400 tracking-widest";
@@ -331,22 +369,42 @@
             }
         });
 
-        // Keyboard Support
         [p1, p2].forEach(input => {
             input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') handleUnlockRequest();
+                if (e.key === 'Enter') handleAction();
             });
         });
 
-        unlockBtn.addEventListener('click', handleUnlockRequest);
+        unlockBtn.addEventListener('click', handleAction);
 
-        function handleUnlockRequest() {
+        function handleAction() {
             if (isLockout) return;
-            if (p1.value === _O.k1 && p2.value === _O.k2) {
-                runDecryptionSequence();
+            
+            if (isSetupMode) {
+                if (p1.value.length < 4 || p2.value.length < 4) {
+                    showError("Keys must be at least 4 characters");
+                    return;
+                }
+                localStorage.setItem(STORAGE_KEY_ALPHA, p1.value);
+                localStorage.setItem(STORAGE_KEY_BETA, p2.value);
+                showToast("SECURITY ESTABLISHED");
+                setTimeout(() => location.reload(), 1500);
             } else {
-                handleFailure();
+                const storedAlpha = localStorage.getItem(STORAGE_KEY_ALPHA);
+                const storedBeta = localStorage.getItem(STORAGE_KEY_BETA);
+                
+                if (p1.value === storedAlpha && p2.value === storedBeta) {
+                    runDecryptionSequence();
+                } else {
+                    handleFailure();
+                }
             }
+        }
+
+        function showError(msg) {
+            statusMsg.classList.remove('hidden');
+            statusMsg.classList.add('text-red-500', 'border-red-500/20');
+            statusMsg.innerText = msg;
         }
 
         function handleFailure() {
@@ -367,7 +425,7 @@
                     }
                 }, 1000);
             } else {
-                statusMsg.innerText = `INVALID SIGNATURE - ATTEMPT ${failedAttempts}/3`;
+                statusMsg.innerText = `TRY AGAIN - ATTEMPT ${failedAttempts}/3`;
                 p2.value = "";
                 p2.focus();
                 // Shake effect
@@ -396,7 +454,7 @@
             ];
 
             const interval = setInterval(() => {
-                progress += Math.random() * 12;
+                progress += Math.random() * 15;
                 if (progress > 100) progress = 100;
                 bar.style.width = `${progress}%`;
                 
@@ -407,7 +465,7 @@
                     clearInterval(interval);
                     setTimeout(unlockVault, 400);
                 }
-            }, 60);
+            }, 70);
         }
 
         function unlockVault() {
@@ -416,7 +474,6 @@
             document.getElementById('main-vault').classList.remove('hidden-vault');
             
             const container = document.getElementById('links-container');
-            // Security: Data is only injected now, after auth is successful
             RAW_VAULT.forEach((item, i) => {
                 const div = document.createElement('div');
                 div.className = "glass-card rounded-3xl p-6 flex flex-col justify-between group hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-1";
@@ -425,7 +482,7 @@
                         <div class="flex gap-2 mb-4">
                             ${item.tags.map(t => `<span class="px-2 py-0.5 rounded-lg bg-blue-500/5 text-[8px] font-black text-blue-500/60 border border-blue-500/10 uppercase tracking-widest">${t}</span>`).join('')}
                         </div>
-                        <h3 class="text-lg font-black text-white mb-2 group-hover:text-blue-400 transition-colors">${item.title}</h3>
+                        <h3 class="text-lg font-black text-white mb-2 group-hover:text-blue-400 transition-colors uppercase tracking-tight">${item.title}</h3>
                         <div class="relative overflow-hidden">
                             <p class="asset-url text-[10px] font-mono text-slate-500 break-all leading-relaxed transition-all duration-300 ${isPrivacyMode ? 'blur-sm' : ''}">${item.url}</p>
                         </div>
@@ -456,7 +513,7 @@
                 const percent = (time / totalSessionTime) * 100;
                 progressBar.style.width = `${100 - percent}%`;
 
-                if (time <= 300) { // Last 5 mins
+                if (time <= 300) {
                     display.classList.add('text-red-500', 'animate-pulse');
                     progressBar.classList.add('bg-red-500');
                 }
@@ -480,15 +537,16 @@
             const icon = btn.querySelector('i');
             icon.classList.replace('fa-copy', 'fa-check');
             btn.classList.add('bg-green-600', 'text-white', 'border-green-400/20');
-            showToast();
+            showToast("LINK COPIED TO BUFFER");
             setTimeout(() => {
                 icon.classList.replace('fa-check', 'fa-copy');
                 btn.classList.remove('bg-green-600', 'text-white', 'border-green-400/20');
             }, 2000);
         }
 
-        function showToast() {
+        function showToast(text) {
             const toast = document.getElementById('toast');
+            document.getElementById('toast-text').innerText = text;
             toast.style.opacity = '1';
             toast.style.transform = 'translate(-50%, 0)';
             setTimeout(() => {
@@ -497,7 +555,7 @@
             }, 3000);
         }
 
-        // Anti-Debugging measures
+        // Anti-Debugging
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
             if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67))) {
@@ -507,4 +565,3 @@
     </script>
 </body>
 </html>
-
