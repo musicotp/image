@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Vault v4.1 - Secure Access</title>
+    <title>Nexus Vault - Restricted Access</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -12,7 +12,6 @@
         :root {
             --primary: #3b82f6;
             --primary-glow: rgba(59, 130, 246, 0.4);
-            --accent: #6366f1;
         }
 
         body {
@@ -34,56 +33,20 @@
             height: 100%;
             z-index: -1;
             background: 
-                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.12) 0, transparent 50%),
-                radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.12) 0, transparent 50%),
-                radial-gradient(at 50% 100%, rgba(30, 64, 175, 0.08) 0, transparent 50%);
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.1) 0, transparent 50%);
         }
 
         .glass-card {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(25px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        .input-group:focus-within {
+        .input-glow:focus-within {
             border-color: var(--primary);
-            box-shadow: 0 0 0 1px var(--primary), 0 0 30px var(--primary-glow);
-        }
-
-        .shimmer-btn {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .shimmer-btn::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-            transform: rotate(45deg);
-            transition: 0.8s;
-        }
-
-        .shimmer-btn:hover::after {
-            left: 120%;
-        }
-
-        .hidden-vault { display: none; }
-        
-        .privacy-mask {
-            filter: blur(12px) brightness(0.4);
-            pointer-events: none;
-            user-select: none;
-        }
-
-        @keyframes scanline {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(1000%); }
+            box-shadow: 0 0 20px var(--primary-glow);
         }
 
         .scanline {
@@ -92,386 +55,152 @@
             left: 0;
             width: 100%;
             height: 2px;
-            background: linear-gradient(to right, transparent, rgba(59, 130, 246, 0.3), transparent);
-            animation: scanline 10s linear infinite;
+            background: linear-gradient(to right, transparent, rgba(59, 130, 246, 0.2), transparent);
+            animation: scan 8s linear infinite;
             pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(-100vh); }
+            100% { transform: translateY(100vh); }
         }
 
         .decrypt-bar {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            box-shadow: 0 0 15px var(--primary-glow);
-            transition: width 0.15s ease-out;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+            transition: width 0.1s ease-out;
         }
 
-        .lockout-active {
-            filter: grayscale(1) brightness(0.3);
-            pointer-events: none;
-        }
-
-        .step-transition {
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        #privacy-overlay {
-            z-index: 9999;
-            backdrop-filter: blur(40px);
-            background: rgba(2, 6, 23, 0.8);
-        }
+        .hidden { display: none !important; }
     </style>
 </head>
-<body class="p-4 select-none">
+<body class="p-6">
     <div class="bg-mesh"></div>
     <div class="scanline"></div>
 
-    <!-- Privacy Overlay -->
-    <div id="privacy-overlay" class="fixed inset-0 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500">
-        <div class="text-center space-y-4">
-            <div class="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto border border-blue-500/20">
-                <i class="fas fa-eye-slash text-3xl text-blue-400"></i>
-            </div>
-            <h2 class="text-xl font-bold text-white tracking-widest uppercase">Privacy Mode Active</h2>
-            <p class="text-slate-400 text-sm">Click anywhere to resume session</p>
-        </div>
-    </div>
-
-    <!-- Login/Setup Container -->
-    <div id="login-overlay" class="w-full max-w-md z-50">
-        <div class="glass-card rounded-[2.5rem] p-10 space-y-8 relative overflow-hidden step-transition" id="login-panel">
-            <div class="text-center relative z-10">
-                <div class="relative inline-block">
-                    <div class="absolute inset-0 bg-blue-500 blur-3xl opacity-20 animate-pulse"></div>
-                    <div class="relative inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-slate-800 to-black rounded-3xl mb-6 border border-white/10 shadow-inner">
-                        <i id="lock-icon" class="fas fa-lock text-3xl text-blue-400 transition-all duration-700"></i>
-                    </div>
+    <!-- Login Portal -->
+    <div id="login-screen" class="w-full max-w-md z-50">
+        <div class="glass-card rounded-[2rem] p-10 space-y-8 text-center border-t border-white/20">
+            <div class="space-y-4">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-500/10 rounded-2xl border border-blue-500/20 mb-2">
+                    <i id="lock-icon" class="fas fa-fingerprint text-3xl text-blue-400"></i>
                 </div>
-                <h1 id="vault-title" class="text-4xl font-black tracking-tighter bg-gradient-to-b from-white to-slate-400 bg-clip-text text-transparent uppercase">Nexus Vault</h1>
-                <p id="vault-subtitle" class="text-slate-500 mt-2 text-[10px] font-black uppercase tracking-[0.4em]">Secure Handshake v4.1</p>
+                <h1 class="text-3xl font-black tracking-tighter uppercase">Nexus Vault</h1>
+                <p class="text-slate-500 text-[10px] font-bold tracking-[0.4em] uppercase">Authorized Personnel Only</p>
             </div>
 
-            <div class="space-y-6" id="auth-forms">
-                <!-- Pass 1 -->
-                <div id="step-1-container" class="space-y-3">
-                    <div class="flex justify-between items-center px-1">
-                        <label id="p1-label" class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Alpha Keyphrase</label>
-                        <span id="p1-status" class="text-[10px] font-bold text-slate-600 tracking-widest">WAITING</span>
-                    </div>
-                    <div class="relative group input-group border border-white/5 bg-black/40 rounded-2xl transition-all duration-300">
-                        <i class="fas fa-fingerprint absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-400 transition-colors"></i>
-                        <input type="password" id="pass1" autocomplete="off" placeholder="••••••••••••" 
-                               class="w-full bg-transparent py-4 pl-12 pr-12 focus:outline-none text-slate-200 placeholder:text-slate-800 font-mono text-sm">
-                        <button type="button" onclick="toggleVisibility('pass1', 'eye1')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-400 transition-colors">
-                            <i id="eye1" class="fas fa-eye-slash"></i>
-                        </button>
-                    </div>
+            <div id="auth-container" class="space-y-4">
+                <div class="relative group input-glow border border-white/5 bg-black/40 rounded-2xl transition-all duration-300">
+                    <input type="password" id="vault-pass" placeholder="ENTER ACCESS KEY" 
+                           class="w-full bg-transparent py-4 px-6 focus:outline-none text-center text-sm tracking-[0.5em] font-mono text-blue-400 placeholder:text-slate-700">
                 </div>
-
-                <!-- Pass 2 -->
-                <div id="step-2-container" class="space-y-3 opacity-20 pointer-events-none step-transition">
-                    <div class="flex justify-between items-center px-1">
-                        <label id="p2-label" class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Beta Signature</label>
-                        <span id="p2-status" class="text-[10px] font-bold text-slate-600 tracking-widest">LOCKED</span>
-                    </div>
-                    <div class="relative group input-group border border-white/5 bg-black/40 rounded-2xl transition-all duration-300">
-                        <i class="fas fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-blue-400 transition-colors"></i>
-                        <input type="password" id="pass2" autocomplete="off" placeholder="••••••••••••" 
-                               class="w-full bg-transparent py-4 pl-12 pr-12 focus:outline-none text-slate-200 placeholder:text-slate-800 font-mono text-sm">
-                        <button type="button" onclick="toggleVisibility('pass2', 'eye2')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-400 transition-colors">
-                            <i id="eye2" class="fas fa-eye-slash"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div id="status-msg" class="hidden text-[10px] font-black p-4 rounded-xl text-center uppercase tracking-widest border border-white/5 bg-black/30"></div>
-
-                <button id="unlock-btn" class="shimmer-btn w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-3 uppercase tracking-widest">
-                    <span id="btn-text">INITIALIZE DECRYPTION</span>
-                    <i class="fas fa-terminal text-xs"></i>
+                <button onclick="checkAccess()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl transition-all active:scale-95 text-xs tracking-widest uppercase">
+                    Initialize Handshake
                 </button>
+                <p id="error-msg" class="text-red-500 text-[9px] font-black uppercase tracking-widest hidden">Invalid Security Signature</p>
             </div>
 
-            <!-- Loading UI -->
+            <!-- Loading UI (Hidden by default) -->
             <div id="loading-ui" class="hidden space-y-6 py-4">
                 <div class="text-center space-y-2">
-                    <div class="text-blue-400 text-[10px] font-black animate-pulse uppercase tracking-widest" id="decrypt-status">Establishing Secure Tunnel...</div>
-                    <div class="text-slate-600 text-[9px] font-mono h-4" id="decrypt-log"></div>
+                    <div class="text-blue-400 text-[10px] font-black animate-pulse uppercase tracking-widest">Decrypting Secure Layers...</div>
                 </div>
-                <div class="h-1.5 bg-slate-900 rounded-full overflow-hidden">
+                <div class="h-1 bg-slate-900 rounded-full overflow-hidden">
                     <div id="decrypt-bar" class="decrypt-bar"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Secure Vault -->
-    <div id="main-vault" class="hidden-vault w-full max-w-6xl py-12 px-4 relative">
+    <!-- Main Vault (Hidden by default) -->
+    <div id="main-vault" class="hidden w-full max-w-6xl py-12 relative">
         <header class="mb-12 text-center space-y-6">
-            <div class="flex flex-wrap justify-center gap-3">
-                <div class="px-4 py-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-[10px] font-black uppercase tracking-widest flex items-center">
-                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-2 animate-pulse"></span> Encrypted Session
-                </div>
-                <button id="privacy-toggle" onclick="togglePrivacy()" class="px-4 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest hover:bg-blue-500/20 transition-all flex items-center">
-                    <i id="privacy-icon" class="fas fa-eye-slash mr-2"></i> Privacy Mode: <span id="privacy-state" class="ml-1">OFF</span>
-                </button>
-                <button onclick="resetVault()" class="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all">
-                    <i class="fas fa-sync-alt mr-2"></i> Reset Keys
-                </button>
+            <div class="inline-flex px-4 py-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-[10px] font-black uppercase tracking-widest">
+                <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-2 animate-pulse"></span> Identity Verified
             </div>
             <h2 class="text-5xl font-black tracking-tighter text-white">CENTRAL COMMAND</h2>
-            <p class="text-slate-500 max-w-xl mx-auto text-xs font-bold uppercase tracking-widest">Protocol 0.4.2 Active • Neural Link Decrypted</p>
+            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Session Active • All Systems Nominal</p>
         </header>
 
         <div id="links-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5">
-            <!-- Dynamic Injection -->
+            <!-- Dynamic Links -->
         </div>
 
-        <div class="mt-20 flex flex-col items-center gap-8">
-            <div class="relative w-full max-w-md h-1 bg-white/5 rounded-full overflow-hidden">
-                <div id="session-progress" class="absolute top-0 right-0 h-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)] transition-all duration-1000"></div>
-            </div>
-            <div class="flex items-center gap-8">
-                <div class="flex flex-col items-center">
-                    <span class="text-slate-600 text-[9px] font-black uppercase tracking-[0.3em] mb-1">Time Remaining</span>
-                    <span id="timer" class="text-blue-400 font-mono text-2xl font-light">30:00</span>
+        <div class="mt-20 flex justify-center">
+            <button onclick="location.reload()" class="flex flex-col items-center group">
+                <div class="w-12 h-12 rounded-full border border-red-500/20 bg-red-500/5 flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition-all text-red-500">
+                    <i class="fas fa-power-off"></i>
                 </div>
-                <div class="h-10 w-px bg-slate-800/50"></div>
-                <button onclick="location.reload()" class="group flex flex-col items-center">
-                    <span class="text-red-900 group-hover:text-red-500 text-[9px] font-black uppercase tracking-[0.3em] mb-1 transition-colors">Wipe Memory</span>
-                    <div class="w-10 h-10 rounded-full bg-red-500/5 border border-red-500/10 flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition-all">
-                        <i class="fas fa-power-off"></i>
-                    </div>
-                </button>
-            </div>
+                <span class="mt-2 text-slate-600 text-[9px] font-black uppercase tracking-widest">Terminate Session</span>
+            </button>
         </div>
     </div>
 
-    <!-- Notification Toast -->
-    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 glass-card px-8 py-4 rounded-3xl shadow-2xl border border-blue-500/20 text-xs font-black uppercase tracking-widest opacity-0 translate-y-20 transition-all duration-500 pointer-events-none flex items-center gap-3 z-[100]">
-        <i class="fas fa-check-circle text-blue-400"></i>
-        <span id="toast-text">Link copied to buffer</span>
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 glass-card px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest opacity-0 translate-y-10 transition-all duration-500 pointer-events-none z-[100]">
+        Buffer Updated
     </div>
 
     <script>
-        // High-security Obfuscated Storage Keys
-        const STORAGE_KEY_ALPHA = "nx_vault_a";
-        const STORAGE_KEY_BETA = "nx_vault_b";
-
-        let isSetupMode = false;
-        let failedAttempts = 0;
-        let isLockout = false;
-        let isPrivacyMode = false;
-        let sessionTimer;
-        let totalSessionTime = 1800; // 30 minutes
-        let isAuthorized = false;
-
-        const p1 = document.getElementById('pass1');
-        const p2 = document.getElementById('pass2');
-        const s2Container = document.getElementById('step-2-container');
-        const unlockBtn = document.getElementById('unlock-btn');
-        const statusMsg = document.getElementById('status-msg');
-        const lockIcon = document.getElementById('lock-icon');
-        const vaultTitle = document.getElementById('vault-title');
-        const vaultSubtitle = document.getElementById('vault-subtitle');
-        const btnText = document.getElementById('btn-text');
-
-        // Vault Contents
+        const ACCESS_KEY = "sunomusicchannel";
+        
         const RAW_VAULT = [
-            { title: "Strategic Command Interface", url: "https://nwoleaks.top/young-paki-threesome-smooching-on-tango-live-show-2/", tags: ["Alpha", "C2"] },
+            { title: "Strategic Command Interface", url: "https://nwoleaks.top/young-paki-threesome-smooching-on-tango-live-show-2/", tags: ["Alpha"] },
             { title: "Financial Ledger Mirror", url: "https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2", tags: ["Assets"] },
             { title: "Encrypted Comms Hub", url: "https://desifakes.com/threads/ai-only-actress-and-celebrities-fakes.35277/page-2", tags: ["Comms"] },
             { title: "Ghost Identity API", url: "https://aagmaal.to/2023/08/13/millionaires-son-and-daughter-18-arkestra-dance-night-club-viral-video-2023-uncut-mms-porn/", tags: ["API"] },
-            { title: "Mainframe Log Stream", url: "https://www.eporner.com/video-lYXKdkv5md1/indian-cousions-bhai-behen-ka-purana-mms-hua-viral/", tags: ["System"] },
-            { title: "Offshore Asset Portal", url: "https://www.eporner.com/video-ecDHStkub8Y/desi-young-slim-school-girl-fucking-viral-mms-clip/", tags: ["Secure"] },
-            { title: "Neural Override Gateway", url: "https://www.eporner.com/video-s9AkDcHELAE/perfect-hot-figure-indian-teen-showing-nudes-mms/", tags: ["Danger"] },
+            { title: "Mainframe Log Stream", url: "https://www.eporner.com/video-lYXKdkv5md1/indian-cousions-bhai-behen-ka-purana-mms-hua-viral/", tags: ["Log"] },
+            { title: "Offshore Asset Portal", url: "https://www.eporner.com/video-ecDHStkub8Y/desi-young-slim-school-girl-fucking-viral-mms-clip/", tags: ["Vault"] },
+            { title: "Neural Override Gateway", url: "https://www.eporner.com/video-s9AkDcHELAE/perfect-hot-figure-indian-teen-showing-nudes-mms/", tags: ["Secure"] },
             { title: "Jaisalmer Heritage Log", url: "https://www.eporner.com/video-stHsHU2V5Ov/jaisalmer-rajasthan-completely-naked-girl-with-old-man-viral-full-video/", tags: ["Storage"] },
             { title: "Admin Payload Dispatch", url: "https://www.eporner.com/video-87U4JwsVVd7/sexy-desi-cheating-wife-blowjob-and-fucking-with-lover-viral-mms/", tags: ["Root"] },
             { title: "Operational Briefing", url: "https://brief.ops.int/daily", tags: ["Intel"] }
         ];
 
-        // Check if passwords exist
-        window.onload = function() {
-            const storedAlpha = localStorage.getItem(STORAGE_KEY_ALPHA);
-            const storedBeta = localStorage.getItem(STORAGE_KEY_BETA);
-
-            if (!storedAlpha || !storedBeta) {
-                initSetupMode();
-            }
-        };
-
-        function initSetupMode() {
-            isSetupMode = true;
-            vaultTitle.innerText = "Setup Vault";
-            vaultSubtitle.innerText = "Initialize Your Security Protocol";
-            document.getElementById('p1-label').innerText = "Set Alpha Keyphrase";
-            document.getElementById('p2-label').innerText = "Set Beta Signature";
-            btnText.innerText = "SECURE VAULT";
-            lockIcon.className = "fas fa-user-plus text-3xl text-blue-400";
-            s2Container.classList.remove('opacity-20', 'pointer-events-none');
-            p1.placeholder = "Enter Pass 1";
-            p2.placeholder = "Enter Pass 2";
-        }
-
-        function resetVault() {
-            if (confirm("DANGER: This will wipe your access keys and reset the vault. Continue?")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
-
-        // Privacy Logic
-        window.addEventListener('blur', () => {
-            if (isAuthorized) {
-                document.getElementById('privacy-overlay').style.opacity = '1';
-                document.getElementById('privacy-overlay').style.pointerEvents = 'auto';
-                document.getElementById('main-vault').classList.add('privacy-mask');
-            }
-        });
-
-        window.addEventListener('focus', () => {
-            document.getElementById('privacy-overlay').style.opacity = '0';
-            document.getElementById('privacy-overlay').style.pointerEvents = 'none';
-            if (!isPrivacyMode) {
-                document.getElementById('main-vault').classList.remove('privacy-mask');
-            }
-        });
-
-        function toggleVisibility(id, iconId) {
-            const input = document.getElementById(id);
-            const icon = document.getElementById(iconId);
-            input.type = input.type === "password" ? "text" : "password";
-            icon.classList.toggle('fa-eye-slash');
-            icon.classList.toggle('fa-eye');
-        }
-
-        function togglePrivacy() {
-            isPrivacyMode = !isPrivacyMode;
-            const stateText = document.getElementById('privacy-state');
-            const icon = document.getElementById('privacy-icon');
-            stateText.innerText = isPrivacyMode ? "ON" : "OFF";
-            icon.className = isPrivacyMode ? "fas fa-eye text-blue-400 mr-2" : "fas fa-eye-slash text-blue-400 mr-2";
-            document.querySelectorAll('.asset-url').forEach(el => {
-                isPrivacyMode ? el.classList.add('blur-sm') : el.classList.remove('blur-sm');
-            });
-            document.getElementById('privacy-toggle').classList.toggle('bg-blue-500/30');
-        }
-
-        // Handle auto-advance for LOGIN mode
-        p1.addEventListener('input', () => {
-            if (isSetupMode) return;
-            const storedAlpha = localStorage.getItem(STORAGE_KEY_ALPHA);
-            if (p1.value === storedAlpha) {
-                s2Container.classList.remove('opacity-20', 'pointer-events-none');
-                document.getElementById('p1-status').innerText = "VERIFIED";
-                document.getElementById('p1-status').className = "text-[10px] font-black text-blue-400 tracking-widest";
-                p2.focus();
-                lockIcon.className = "fas fa-shield-halved text-3xl text-yellow-400";
-            }
-        });
-
-        [p1, p2].forEach(input => {
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') handleAction();
-            });
-        });
-
-        unlockBtn.addEventListener('click', handleAction);
-
-        function handleAction() {
-            if (isLockout) return;
+        function checkAccess() {
+            const input = document.getElementById('vault-pass').value;
+            const error = document.getElementById('error-msg');
             
-            if (isSetupMode) {
-                if (p1.value.length < 4 || p2.value.length < 4) {
-                    showError("Keys must be at least 4 characters");
-                    return;
-                }
-                localStorage.setItem(STORAGE_KEY_ALPHA, p1.value);
-                localStorage.setItem(STORAGE_KEY_BETA, p2.value);
-                showToast("SECURITY ESTABLISHED");
-                setTimeout(() => location.reload(), 1500);
+            if (input === ACCESS_KEY) {
+                startDecryption();
             } else {
-                const storedAlpha = localStorage.getItem(STORAGE_KEY_ALPHA);
-                const storedBeta = localStorage.getItem(STORAGE_KEY_BETA);
-                
-                if (p1.value === storedAlpha && p2.value === storedBeta) {
-                    runDecryptionSequence();
-                } else {
-                    handleFailure();
-                }
+                error.classList.remove('hidden');
+                document.getElementById('vault-pass').value = '';
+                setTimeout(() => error.classList.add('hidden'), 2000);
             }
         }
 
-        function showError(msg) {
-            statusMsg.classList.remove('hidden');
-            statusMsg.classList.add('text-red-500', 'border-red-500/20');
-            statusMsg.innerText = msg;
-        }
+        // Allow 'Enter' key to submit
+        document.getElementById('vault-pass').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkAccess();
+        });
 
-        function handleFailure() {
-            failedAttempts++;
-            statusMsg.classList.remove('hidden');
-            statusMsg.classList.add('text-red-500', 'border-red-500/20');
-            
-            if (failedAttempts >= 3) {
-                isLockout = true;
-                let countdown = 60;
-                document.getElementById('login-panel').classList.add('lockout-active');
-                const timer = setInterval(() => {
-                    statusMsg.innerText = `SECURITY LOCKOUT: ${countdown}s`;
-                    countdown--;
-                    if (countdown < 0) {
-                        clearInterval(timer);
-                        location.reload();
-                    }
-                }, 1000);
-            } else {
-                statusMsg.innerText = `TRY AGAIN - ATTEMPT ${failedAttempts}/3`;
-                p2.value = "";
-                p2.focus();
-                // Shake effect
-                const panel = document.getElementById('login-panel');
-                panel.classList.add('translate-x-2');
-                setTimeout(() => panel.classList.remove('translate-x-2'), 100);
-            }
-        }
-
-        function runDecryptionSequence() {
-            document.getElementById('auth-forms').classList.add('hidden');
+        function startDecryption() {
+            document.getElementById('auth-container').classList.add('hidden');
             document.getElementById('loading-ui').classList.remove('hidden');
-            lockIcon.className = "fas fa-unlock text-3xl text-green-400 animate-pulse";
+            document.getElementById('lock-icon').className = "fas fa-unlock text-3xl text-green-400 animate-pulse";
             
             let progress = 0;
             const bar = document.getElementById('decrypt-bar');
-            const status = document.getElementById('decrypt-status');
-            const log = document.getElementById('decrypt-log');
             
-            const messages = [
-                "Allocating Virtual Memory...",
-                "Running RSA-4096 Decryption...",
-                "Bypassing Firewall Clusters...",
-                "Verifying Identity Shards...",
-                "Handshake Finalized."
-            ];
-
             const interval = setInterval(() => {
-                progress += Math.random() * 15;
+                progress += Math.random() * 12;
                 if (progress > 100) progress = 100;
                 bar.style.width = `${progress}%`;
-                
-                status.innerText = messages[Math.floor((progress/101) * messages.length)];
-                log.innerText = `0x${Math.random().toString(16).slice(2, 10).toUpperCase()} >> SYNC_OK`;
 
                 if (progress === 100) {
                     clearInterval(interval);
-                    setTimeout(unlockVault, 400);
+                    setTimeout(showVault, 500);
                 }
-            }, 70);
+            }, 80);
         }
 
-        function unlockVault() {
-            isAuthorized = true;
-            document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('main-vault').classList.remove('hidden-vault');
+        function showVault() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-vault').classList.remove('hidden');
+            document.body.style.alignItems = "flex-start";
             
             const container = document.getElementById('links-container');
             RAW_VAULT.forEach((item, i) => {
@@ -480,88 +209,46 @@
                 div.innerHTML = `
                     <div>
                         <div class="flex gap-2 mb-4">
-                            ${item.tags.map(t => `<span class="px-2 py-0.5 rounded-lg bg-blue-500/5 text-[8px] font-black text-blue-500/60 border border-blue-500/10 uppercase tracking-widest">${t}</span>`).join('')}
+                            ${item.tags.map(t => `<span class="px-2 py-0.5 rounded-lg bg-blue-500/10 text-[8px] font-black text-blue-400 border border-blue-500/10 uppercase tracking-widest">${t}</span>`).join('')}
                         </div>
                         <h3 class="text-lg font-black text-white mb-2 group-hover:text-blue-400 transition-colors uppercase tracking-tight">${item.title}</h3>
-                        <div class="relative overflow-hidden">
-                            <p class="asset-url text-[10px] font-mono text-slate-500 break-all leading-relaxed transition-all duration-300 ${isPrivacyMode ? 'blur-sm' : ''}">${item.url}</p>
-                        </div>
+                        <p class="text-[10px] font-mono text-slate-500 break-all line-clamp-1 opacity-60">${item.url}</p>
                     </div>
                     <div class="mt-8 flex items-center justify-between">
-                        <span class="text-[9px] font-black text-slate-700 tracking-[0.3em]">SEC-NODE 0${i + 1}</span>
-                        <button onclick="copyData('${item.url}', this)" class="w-12 h-12 rounded-2xl bg-slate-900/50 hover:bg-blue-600 text-slate-500 hover:text-white transition-all flex items-center justify-center border border-white/5 active:scale-90">
-                            <i class="far fa-copy text-sm"></i>
-                        </button>
+                        <span class="text-[9px] font-black text-slate-700 tracking-widest uppercase">NODE 0${i + 1}</span>
+                        <div class="flex gap-2">
+                            <a href="${item.url}" target="_blank" class="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center transition-all border border-white/5">
+                                <i class="fas fa-external-link-alt text-xs"></i>
+                            </a>
+                            <button onclick="copyLink('${item.url}')" class="w-10 h-10 rounded-xl bg-blue-600/10 hover:bg-blue-600 text-blue-400 hover:text-white flex items-center justify-center transition-all border border-blue-500/10 active:scale-90">
+                                <i class="far fa-copy text-xs"></i>
+                            </button>
+                        </div>
                     </div>
                 `;
                 container.appendChild(div);
             });
-
-            startSessionTimer();
         }
 
-        function startSessionTimer() {
-            let time = totalSessionTime;
-            const display = document.getElementById('timer');
-            const progressBar = document.getElementById('session-progress');
-            
-            sessionTimer = setInterval(() => {
-                const m = Math.floor(time / 60);
-                const s = time % 60;
-                display.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-                
-                const percent = (time / totalSessionTime) * 100;
-                progressBar.style.width = `${100 - percent}%`;
-
-                if (time <= 300) {
-                    display.classList.add('text-red-500', 'animate-pulse');
-                    progressBar.classList.add('bg-red-500');
-                }
-
-                if (time <= 0) {
-                    clearInterval(sessionTimer);
-                    location.reload();
-                }
-                time--;
-            }, 1000);
-        }
-
-        function copyData(text, btn) {
+        function copyLink(text) {
             const el = document.createElement('textarea');
             el.value = text;
             document.body.appendChild(el);
             el.select();
             document.execCommand('copy');
             document.body.removeChild(el);
-
-            const icon = btn.querySelector('i');
-            icon.classList.replace('fa-copy', 'fa-check');
-            btn.classList.add('bg-green-600', 'text-white', 'border-green-400/20');
-            showToast("LINK COPIED TO BUFFER");
-            setTimeout(() => {
-                icon.classList.replace('fa-check', 'fa-copy');
-                btn.classList.remove('bg-green-600', 'text-white', 'border-green-400/20');
-            }, 2000);
+            showToast();
         }
 
-        function showToast(text) {
+        function showToast() {
             const toast = document.getElementById('toast');
-            document.getElementById('toast-text').innerText = text;
             toast.style.opacity = '1';
-            toast.style.transform = 'translate(-50%, 0)';
+            toast.style.transform = 'translate(-50%, -20px)';
             setTimeout(() => {
                 toast.style.opacity = '0';
-                toast.style.transform = 'translate(-50%, 5rem)';
-            }, 3000);
+                toast.style.transform = 'translate(-50%, 10px)';
+            }, 2000);
         }
-
-        // Anti-Debugging
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', e => {
-            if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67))) {
-                e.preventDefault();
-            }
-        });
     </script>
 </body>
 </html>
